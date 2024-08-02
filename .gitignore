@@ -1,0 +1,14 @@
+.pytest_cache/*
+.ruff_cache/*
+.vscode/*
+*.pyc
+htmlcov/*
+
+.coverage
+.env
+database.db
+
+poetry.lock
+
+compose.yaml
+help.txt
