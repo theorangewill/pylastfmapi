@@ -1,0 +1,2 @@
+class LastFMException(Exception):
+    pass
