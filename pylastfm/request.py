@@ -1,11 +1,12 @@
 import time
 from http import HTTPStatus
+from math import ceil
 from typing import Annotated
 
 import requests
 import requests_cache
 
-from pylastfm.constants import URL
+from pylastfm.constants import LIMIT, URL
 from pylastfm.exceptions import RequestErrorException
 
 T_Response = Annotated[
@@ -42,29 +43,45 @@ class RequestController:
             )
         return response
 
-    def clear_cache(self) -> None:
-        cache = self.requests_cache.get_cache()
+    @staticmethod
+    def clear_cache() -> None:
+        cache = requests_cache.get_cache()
         cache.clear()
 
     def request_all_pages(
-        self, payload: dict, parent_key: str, list_key: str
+        self, payload: dict, parent_key: str, list_key: str, amount: int
     ) -> list[T_Response]:
         responses = []
         page = 1
+        num_pages = None
+
+        payload['limit'] = LIMIT
+        if amount:
+            if amount < LIMIT:
+                last_limit = amount
+                num_pages = 1
+            else:
+                last_limit = amount % LIMIT
+                num_pages = ceil(amount / LIMIT)
+
         while True:
-            payload['page'] = page
+            payload = {**payload, 'page': page}
+            if num_pages == page:
+                payload.update({'limit': last_limit})
             response = self.request(payload)
             content = response.json()
 
             if len(content[parent_key][list_key]) == 0:
                 print('No more results, but there are more pages')
                 break
-
             if not getattr(response, 'from_cache', False):
                 time.sleep(0.25)
             responses.append(response)
-            page += 1
 
-            if page > int(content[parent_key]['@attr']['totalPages']):
+            if page == int(content[parent_key]['@attr']['totalPages']):
                 break
+            if num_pages and page == num_pages:
+                break
+
+            page += 1
         return responses

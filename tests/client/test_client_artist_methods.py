@@ -8,7 +8,6 @@ from pylastfm.constants import (
     ARTIST_GETTOPALBUMS,
     ARTIST_GETTOPTAGS,
     ARTIST_GETTOPTRACKS,
-    LIMIT,
 )
 from pylastfm.exceptions import LastFMException
 
@@ -373,10 +372,10 @@ def test_get_artist_top_albums(mocker):
             'artist': artist,
             'mbid': None,
             'autocorrect': 0,
-            'limit': LIMIT,
         },
         'topalbums',
         'album',
+        None,
     )
     assert response == return_value
 
@@ -422,10 +421,10 @@ def test_get_artist_top_albums_without_artist_name_with_mbid(mocker):
             'artist': None,
             'mbid': mbid,
             'autocorrect': 0,
-            'limit': LIMIT,
         },
         'topalbums',
         'album',
+        None,
     )
     assert response == return_value
 
@@ -433,6 +432,7 @@ def test_get_artist_top_albums_without_artist_name_with_mbid(mocker):
 def test_get_artist_top_albums_with_parameters(mocker):
     artist = 'artistname'
     autocorrect = 1
+    amount = 10
     return_value = [{'name': 'Album Name'}, {'name': 'Album Name'}]
 
     mock_get_paginated_data = mocker.patch.object(
@@ -443,7 +443,7 @@ def test_get_artist_top_albums_with_parameters(mocker):
     client = LastFM('user_agent_test', 'api_key_test')
     ##
     response = client.get_artist_top_albums(
-        artist=artist, autocorrect=autocorrect
+        artist=artist, autocorrect=autocorrect, amount=amount
     )
     ##
     mock_get_paginated_data.assert_called_with(
@@ -452,10 +452,10 @@ def test_get_artist_top_albums_with_parameters(mocker):
             'artist': artist,
             'mbid': None,
             'autocorrect': autocorrect,
-            'limit': LIMIT,
         },
         'topalbums',
         'album',
+        amount,
     )
     assert response == return_value
 
@@ -484,10 +484,10 @@ def test_get_artist_top_tracks(mocker):
             'artist': artist,
             'mbid': None,
             'autocorrect': 0,
-            'limit': LIMIT,
         },
         'toptracks',
         'track',
+        None,
     )
     assert response == return_value
 
@@ -533,16 +533,17 @@ def test_get_artist_top_tracks_without_artist_name_with_mbid(mocker):
             'artist': None,
             'mbid': mbid,
             'autocorrect': 0,
-            'limit': LIMIT,
         },
         'toptracks',
         'track',
+        None,
     )
     assert response == return_value
 
 
 def test_get_artist_top_tracks_with_parameters(mocker):
     artist = 'artistname'
+    amount = 10
     autocorrect = 1
     return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
 
@@ -554,7 +555,7 @@ def test_get_artist_top_tracks_with_parameters(mocker):
     client = LastFM('user_agent_test', 'api_key_test')
     ##
     response = client.get_artist_top_tracks(
-        artist=artist, autocorrect=autocorrect
+        artist=artist, autocorrect=autocorrect, amount=amount
     )
     ##
     mock_get_paginated_data.assert_called_with(
@@ -563,10 +564,10 @@ def test_get_artist_top_tracks_with_parameters(mocker):
             'artist': artist,
             'mbid': None,
             'autocorrect': autocorrect,
-            'limit': LIMIT,
         },
         'toptracks',
         'track',
+        amount,
     )
     assert response == return_value
 

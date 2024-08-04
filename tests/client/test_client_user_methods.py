@@ -1,6 +1,5 @@
 from pylastfm.client import LastFM
 from pylastfm.constants import (
-    LIMIT,
     USER_GETFRIENDS,
     USER_GETINFO,
     USER_GETLOVEDTRACKS,
@@ -32,11 +31,11 @@ def test_get_user_friends(mocker):
         {
             'method': USER_GETFRIENDS,
             'user': user,
-            'limit': LIMIT,
             'recenttracks': False,
         },
         'friends',
         'friend',
+        None,
     )
     assert response == return_value
 
@@ -44,6 +43,7 @@ def test_get_user_friends(mocker):
 def test_get_user_friends_with_parameters(mocker):
     user = 'username'
     recenttracks = True
+    amount = 10
     return_value = [{'name': 'friend Name'}, {'name': 'friend Name'}]
 
     mock_get_paginated_data = mocker.patch.object(
@@ -53,17 +53,19 @@ def test_get_user_friends_with_parameters(mocker):
     )
     client = LastFM('user_agent_test', 'api_key_test')
     ##
-    response = client.get_user_friends(user=user, recenttracks=recenttracks)
+    response = client.get_user_friends(
+        user=user, recenttracks=recenttracks, amount=amount
+    )
     ##
     mock_get_paginated_data.assert_called_with(
         {
             'method': USER_GETFRIENDS,
             'user': user,
-            'limit': LIMIT,
             'recenttracks': recenttracks,
         },
         'friends',
         'friend',
+        amount,
     )
     assert response == return_value
 
@@ -118,10 +120,36 @@ def test_get_user_loved_tracks(mocker):
         {
             'method': USER_GETLOVEDTRACKS,
             'user': user,
-            'limit': LIMIT,
         },
         'lovedtracks',
         'track',
+        None,
+    )
+    assert response == return_value
+
+
+def test_get_user_loved_tracks_with_parameters(mocker):
+    user = 'username'
+    amount = 10
+    return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
+
+    mock_get_paginated_data = mocker.patch.object(
+        LastFM,
+        'get_paginated_data',
+        return_value=return_value,
+    )
+    client = LastFM('user_agent_test', 'api_key_test')
+    ##
+    response = client.get_user_loved_tracks(user=user, amount=amount)
+    ##
+    mock_get_paginated_data.assert_called_with(
+        {
+            'method': USER_GETLOVEDTRACKS,
+            'user': user,
+        },
+        'lovedtracks',
+        'track',
+        amount,
     )
     assert response == return_value
 
@@ -149,10 +177,10 @@ def test_get_user_top_albums(mocker):
             'method': USER_GETTOPALBUMS,
             'user': user,
             'period': 'overall',
-            'limit': LIMIT,
         },
         'topalbums',
         'album',
+        None,
     )
     assert response == return_value
 
@@ -160,6 +188,7 @@ def test_get_user_top_albums(mocker):
 def test_get_user_top_albums_with_parameters(mocker):
     user = 'username'
     period = '7day'
+    amount = 10
     return_value = [{'name': 'Album Name'}, {'name': 'Album Name'}]
 
     mock_get_paginated_data = mocker.patch.object(
@@ -169,17 +198,19 @@ def test_get_user_top_albums_with_parameters(mocker):
     )
     client = LastFM('user_agent_test', 'api_key_test')
     ##
-    response = client.get_user_top_albums(user=user, period=period)
+    response = client.get_user_top_albums(
+        user=user, period=period, amount=amount
+    )
     ##
     mock_get_paginated_data.assert_called_with(
         {
             'method': USER_GETTOPALBUMS,
             'user': user,
             'period': period,
-            'limit': LIMIT,
         },
         'topalbums',
         'album',
+        amount,
     )
     assert response == return_value
 
@@ -207,10 +238,10 @@ def test_get_user_top_artists(mocker):
             'method': USER_GETTOPARTISTS,
             'user': user,
             'period': 'overall',
-            'limit': LIMIT,
         },
         'topartists',
         'artist',
+        None,
     )
     assert response == return_value
 
@@ -218,6 +249,7 @@ def test_get_user_top_artists(mocker):
 def test_get_user_top_artists_with_parameters(mocker):
     user = 'username'
     period = '7day'
+    amount = 10
     return_value = [{'name': 'Album Name'}, {'name': 'Album Name'}]
 
     mock_get_paginated_data = mocker.patch.object(
@@ -227,17 +259,19 @@ def test_get_user_top_artists_with_parameters(mocker):
     )
     client = LastFM('user_agent_test', 'api_key_test')
     ##
-    response = client.get_user_top_artists(user=user, period=period)
+    response = client.get_user_top_artists(
+        user=user, period=period, amount=amount
+    )
     ##
     mock_get_paginated_data.assert_called_with(
         {
             'method': USER_GETTOPARTISTS,
             'user': user,
             'period': period,
-            'limit': LIMIT,
         },
         'topartists',
         'artist',
+        amount,
     )
     assert response == return_value
 
@@ -265,10 +299,10 @@ def test_get_user_top_tracks(mocker):
             'method': USER_GETTOPTRACKS,
             'user': user,
             'period': 'overall',
-            'limit': LIMIT,
         },
         'toptracks',
         'track',
+        None,
     )
     assert response == return_value
 
@@ -276,6 +310,7 @@ def test_get_user_top_tracks(mocker):
 def test_get_user_top_tracks_with_parameters(mocker):
     user = 'username'
     period = '7day'
+    amount = 10
     return_value = [{'name': 'Album Name'}, {'name': 'Album Name'}]
 
     mock_get_paginated_data = mocker.patch.object(
@@ -285,17 +320,19 @@ def test_get_user_top_tracks_with_parameters(mocker):
     )
     client = LastFM('user_agent_test', 'api_key_test')
     ##
-    response = client.get_user_top_tracks(user=user, period=period)
+    response = client.get_user_top_tracks(
+        user=user, period=period, amount=amount
+    )
     ##
     mock_get_paginated_data.assert_called_with(
         {
             'method': USER_GETTOPTRACKS,
             'user': user,
             'period': period,
-            'limit': LIMIT,
         },
         'toptracks',
         'track',
+        amount,
     )
     assert response == return_value
 
@@ -322,9 +359,35 @@ def test_get_user_top_tags(mocker):
         {
             'method': USER_GETTOPTAGS,
             'user': user,
-            'limit': LIMIT,
         },
         'toptags',
         'tag',
+        None,
+    )
+    assert response == return_value
+
+
+def test_get_user_top_tags_with_parameters(mocker):
+    user = 'username'
+    amount = 10
+    return_value = [{'name': 'Album Name'}, {'name': 'Album Name'}]
+
+    mock_get_paginated_data = mocker.patch.object(
+        LastFM,
+        'get_paginated_data',
+        return_value=return_value,
+    )
+    client = LastFM('user_agent_test', 'api_key_test')
+    ##
+    response = client.get_user_top_tags(user=user, amount=amount)
+    ##
+    mock_get_paginated_data.assert_called_with(
+        {
+            'method': USER_GETTOPTAGS,
+            'user': user,
+        },
+        'toptags',
+        'tag',
+        amount,
     )
     assert response == return_value

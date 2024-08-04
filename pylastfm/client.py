@@ -13,7 +13,6 @@ from pylastfm.constants import (
     CHART_GETTOPARTISTS,
     CHART_GETTOPTAGS,
     CHART_GETTOPTRACKS,
-    LIMIT,
     TRACK_GETINFO,
     TRACK_GETSIMILAR,
     TRACK_GETTAGS,
@@ -28,7 +27,7 @@ from pylastfm.constants import (
 )
 from pylastfm.exceptions import LastFMException
 from pylastfm.request import RequestController
-from pylastfm.typehints import ISO639Alpha2Code
+from pylastfm.typehints import ISO639Alpha2Code, T_Period
 
 
 class LastFM:  # noqa PLR0904
@@ -49,10 +48,10 @@ class LastFM:  # noqa PLR0904
         )  # , self.api_secret, self.password_hash)
 
     def get_paginated_data(
-        self, payload: dict, parent_key: str, list_key: str
+        self, payload: dict, parent_key: str, list_key: str, amount: int
     ) -> list[dict]:
         responses = self.request_controller.request_all_pages(
-            payload, parent_key, list_key
+            payload, parent_key, list_key, amount
         )
         response_list = []
         for data in responses:
@@ -63,17 +62,17 @@ class LastFM:  # noqa PLR0904
     # CHARTS
     #########################################################################
 
-    def get_top_artists(self) -> list[dict]:
-        payload = {'method': CHART_GETTOPARTISTS, 'limit': LIMIT}
-        return self.get_paginated_data(payload, 'artists', 'artist')
+    def get_top_artists(self, amount: int = None) -> list[dict]:
+        payload = {'method': CHART_GETTOPARTISTS}
+        return self.get_paginated_data(payload, 'artists', 'artist', amount)
 
-    def get_top_tags(self) -> list[dict]:
-        payload = {'method': CHART_GETTOPTAGS, 'limit': LIMIT}
-        return self.get_paginated_data(payload, 'tags', 'tag')
+    def get_top_tags(self, amount: int = None) -> list[dict]:
+        payload = {'method': CHART_GETTOPTAGS}
+        return self.get_paginated_data(payload, 'tags', 'tag', amount)
 
-    def get_top_tracks(self) -> list[dict]:
-        payload = {'method': CHART_GETTOPTRACKS, 'limit': LIMIT}
-        return self.get_paginated_data(payload, 'tracks', 'track')
+    def get_top_tracks(self, amount: int = None) -> list[dict]:
+        payload = {'method': CHART_GETTOPTRACKS}
+        return self.get_paginated_data(payload, 'tracks', 'track', amount)
 
     #########################################################################
     # ALBUMS
@@ -197,7 +196,7 @@ class LastFM:  # noqa PLR0904
         }
         return self.request_controller.request(payload).json()['tags']['tag']
 
-    def get_artist_top_tags(  # noqa PLR0917
+    def get_artist_top_tags(
         self, artist: str = None, mbid: str = None, autocorrect: int = 0
     ) -> list[dict]:
         if not artist and not mbid:
@@ -215,8 +214,12 @@ class LastFM:  # noqa PLR0904
             'tag'
         ]
 
-    def get_artist_top_albums(  # noqa PLR0917
-        self, artist: str = None, mbid: str = None, autocorrect: int = 0
+    def get_artist_top_albums(
+        self,
+        artist: str = None,
+        mbid: str = None,
+        autocorrect: int = 0,
+        amount: int = None,
     ) -> list[dict]:
         if not artist and not mbid:
             raise LastFMException(
@@ -227,12 +230,15 @@ class LastFM:  # noqa PLR0904
             'artist': artist,
             'mbid': mbid,
             'autocorrect': autocorrect,
-            'limit': LIMIT,
         }
-        return self.get_paginated_data(payload, 'topalbums', 'album')
+        return self.get_paginated_data(payload, 'topalbums', 'album', amount)
 
-    def get_artist_top_tracks(  # noqa PLR0917
-        self, artist: str = None, mbid: str = None, autocorrect: int = 0
+    def get_artist_top_tracks(
+        self,
+        artist: str = None,
+        mbid: str = None,
+        autocorrect: int = 0,
+        amount: int = None,
     ) -> list[dict]:
         if not artist and not mbid:
             raise LastFMException(
@@ -244,11 +250,10 @@ class LastFM:  # noqa PLR0904
             'artist': artist,
             'mbid': mbid,
             'autocorrect': autocorrect,
-            'limit': LIMIT,
         }
-        return self.get_paginated_data(payload, 'toptracks', 'track')
+        return self.get_paginated_data(payload, 'toptracks', 'track', amount)
 
-    def get_artist_similar(  # noqa PLR0917
+    def get_artist_similar(
         self,
         artist: str = None,
         mbid: str = None,
@@ -275,7 +280,7 @@ class LastFM:  # noqa PLR0904
     # TRACK
     #########################################################################
 
-    def get_track_info(  # noqa PLR0917
+    def get_track_info(
         self,
         track: str = None,
         artist: str = None,
@@ -299,7 +304,7 @@ class LastFM:  # noqa PLR0904
         }
         return self.request_controller.request(payload).json()['track']
 
-    def get_track_tags(  # noqa PLR0917
+    def get_track_tags(
         self,
         user: str,
         track: str = None,
@@ -322,7 +327,7 @@ class LastFM:  # noqa PLR0904
         }
         return self.request_controller.request(payload).json()['tags']['tag']
 
-    def get_track_top_tags(  # noqa PLR0917
+    def get_track_top_tags(
         self,
         track: str = None,
         artist: str = None,
@@ -346,7 +351,7 @@ class LastFM:  # noqa PLR0904
             'tag'
         ]
 
-    def get_track_similar(  # noqa PLR0917
+    def get_track_similar(
         self,
         track: str = None,
         artist: str = None,
@@ -376,29 +381,30 @@ class LastFM:  # noqa PLR0904
     #     payload = {'method': ALBUM_SEARCH, 'album': album, 'limit': LIMIT}
     #     return self.get_paginated_data(payload, 'results', 'album')
 
-    def get_user_friends(self, user: str, recenttracks: bool = False) -> dict:
+    #########################################################################
+    # USER
+    #########################################################################
+
+    def get_user_friends(
+        self, user: str, recenttracks: bool = False, amount: int = None
+    ) -> dict:
         payload = {
             'method': USER_GETFRIENDS,
-            'limit': LIMIT,
             'user': user,
             'recenttracks': recenttracks,
         }
-        return self.get_paginated_data(payload, 'friends', 'friend')
+        return self.get_paginated_data(payload, 'friends', 'friend', amount)
 
     def get_user_info(self, user: str) -> dict:
         payload = {'method': USER_GETINFO, 'user': user}
         return self.request_controller.request(payload).json()['user']
 
-    def get_user_loved_tracks(  # noqa PLR0917
-        self,
-        user: str,
-    ) -> dict:
+    def get_user_loved_tracks(self, user: str, amount: int = None) -> dict:
         payload = {
             'method': USER_GETLOVEDTRACKS,
-            'limit': LIMIT,
             'user': user,
         }
-        return self.get_paginated_data(payload, 'lovedtracks', 'track')
+        return self.get_paginated_data(payload, 'lovedtracks', 'track', amount)
 
     # def get_user_personal_tags(  # noqa PLR0917
     #     self,
@@ -417,58 +423,39 @@ class LastFM:  # noqa PLR0904
     #     case 'artist':
     #     return self.get_paginated_data(payload, 'artists', 'artist')
 
-    def get_user_top_albums(  # noqa PLR0917
-        self,
-        user: str,
-        period: Literal[
-            'overall', '7day', '1month', '3month', '6month', '12month'
-        ] = 'overall',
+    def get_user_top_albums(
+        self, user: str, period: T_Period = 'overall', amount: int = None
     ) -> dict:
         payload = {
             'method': USER_GETTOPALBUMS,
-            'limit': LIMIT,
             'user': user,
             'period': period,
         }
-        return self.get_paginated_data(payload, 'topalbums', 'album')
+        return self.get_paginated_data(payload, 'topalbums', 'album', amount)
 
-    def get_user_top_artists(  # noqa PLR0917
-        self,
-        user: str,
-        period: Literal[
-            'overall', '7day', '1month', '3month', '6month', '12month'
-        ] = 'overall',
+    def get_user_top_artists(
+        self, user: str, period: T_Period = 'overall', amount: int = None
     ) -> dict:
         payload = {
             'method': USER_GETTOPARTISTS,
-            'limit': LIMIT,
             'user': user,
             'period': period,
         }
-        return self.get_paginated_data(payload, 'topartists', 'artist')
+        return self.get_paginated_data(payload, 'topartists', 'artist', amount)
 
-    def get_user_top_tracks(  # noqa PLR0917
-        self,
-        user: str,
-        period: Literal[
-            'overall', '7day', '1month', '3month', '6month', '12month'
-        ] = 'overall',
+    def get_user_top_tracks(
+        self, user: str, period: T_Period = 'overall', amount: int = None
     ) -> dict:
         payload = {
             'method': USER_GETTOPTRACKS,
-            'limit': LIMIT,
             'user': user,
             'period': period,
         }
-        return self.get_paginated_data(payload, 'toptracks', 'track')
+        return self.get_paginated_data(payload, 'toptracks', 'track', amount)
 
-    def get_user_top_tags(  # noqa PLR0917
-        self,
-        user: str,
-    ) -> dict:
+    def get_user_top_tags(self, user: str, amount: int = None) -> dict:
         payload = {
             'method': USER_GETTOPTAGS,
-            'limit': LIMIT,
             'user': user,
         }
-        return self.get_paginated_data(payload, 'toptags', 'tag')
+        return self.get_paginated_data(payload, 'toptags', 'tag', amount)
