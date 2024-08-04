@@ -6,6 +6,7 @@ import requests
 import requests_cache
 
 from pylastfm.constants import URL
+from pylastfm.exceptions import RequestErrorException
 
 T_Response = Annotated[
     requests_cache.models.response.OriginalResponse,
@@ -26,6 +27,19 @@ class RequestController:
     def request(self, payload: dict) -> T_Response:
         self.payload.update(payload)
         response = requests.get(URL, headers=self.headers, params=self.payload)
+
+        if response.status_code != HTTPStatus.OK:
+            raise RequestErrorException(
+                f'Something wrong, HTTP error {response.status_code}: '
+                f'{response.text}'
+            )
+
+        content = response.json()
+        if 'error' in content:
+            raise RequestErrorException(
+                f'Something wrong, error {content["error"]}: '
+                f'{content["message"]}'
+            )
         return response
 
     def clear_cache(self) -> None:
@@ -40,11 +54,9 @@ class RequestController:
         while True:
             payload['page'] = page
             response = self.request(payload)
+            content = response.json()
 
-            if response.status_code != HTTPStatus.OK:
-                print(response.status_code, response.text)
-                break
-            if len(response.json()[parent_key][list_key]) == 0:
+            if len(content[parent_key][list_key]) == 0:
                 print('No more results, but there are more pages')
                 break
 
@@ -53,6 +65,6 @@ class RequestController:
             responses.append(response)
             page += 1
 
-            if page > int(response.json()[parent_key]['@attr']['totalPages']):
+            if page > int(content[parent_key]['@attr']['totalPages']):
                 break
         return responses
