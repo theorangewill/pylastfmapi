@@ -6,7 +6,7 @@ from typing import Annotated
 import requests
 import requests_cache
 
-from pylastfm.constants import LIMIT, URL
+from pylastfm.constants import LIMIT, LIMIT_SEARCH, URL
 from pylastfm.exceptions import RequestErrorException
 
 T_Response = Annotated[
@@ -79,6 +79,44 @@ class RequestController:
             responses.append(response)
 
             if page == int(content[parent_key]['@attr']['totalPages']):
+                break
+            if num_pages and page == num_pages:
+                break
+
+            page += 1
+        return responses
+
+    def request_search_pages(
+        self, payload: dict, parent_key: str, list_key: str, amount: int
+    ) -> list[T_Response]:
+        responses = []
+        page = 1
+        num_pages = None
+
+        payload['limit'] = LIMIT_SEARCH
+        if amount:
+            if amount < LIMIT_SEARCH:
+                num_pages = 1
+                payload['limit'] = amount
+            else:
+                num_pages = ceil(amount / LIMIT_SEARCH)
+
+        while True:
+            payload = {**payload, 'page': page}
+            response = self.request(payload)
+            content = response.json()
+
+            if len(content['results'][parent_key][list_key]) == 0:
+                print('No more results, but there are more pages')
+                break
+            if not getattr(response, 'from_cache', False):
+                time.sleep(0.25)
+            responses.append(response)
+
+            if page == ceil(
+                int(content['results']['opensearch:totalResults'])
+                / LIMIT_SEARCH
+            ):
                 break
             if num_pages and page == num_pages:
                 break

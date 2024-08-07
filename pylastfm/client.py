@@ -4,19 +4,24 @@ from pylastfm.constants import (
     ALBUM_GETINFO,
     ALBUM_GETTAGS,
     ALBUM_GETTOPTAGS,
+    ALBUM_SEARCH,
     ARTIST_GETINFO,
     ARTIST_GETSIMILAR,
     ARTIST_GETTAGS,
     ARTIST_GETTOPALBUMS,
     ARTIST_GETTOPTAGS,
     ARTIST_GETTOPTRACKS,
+    ARTIST_SEARCH,
     CHART_GETTOPARTISTS,
     CHART_GETTOPTAGS,
     CHART_GETTOPTRACKS,
+    LIMIT_SEARCH,
+    TRACK_GETCORRECTION,
     TRACK_GETINFO,
     TRACK_GETSIMILAR,
     TRACK_GETTAGS,
     TRACK_GETTOPTAGS,
+    TRACK_SEARCH,
     USER_GETFRIENDS,
     USER_GETINFO,
     USER_GETLOVEDTRACKS,
@@ -27,7 +32,7 @@ from pylastfm.constants import (
 )
 from pylastfm.exceptions import LastFMException
 from pylastfm.request import RequestController
-from pylastfm.typehints import ISO639Alpha2Code, T_Period
+from pylastfm.typehints import T_ISO639Alpha2Code, T_Period
 
 
 class LastFM:  # noqa PLR0904
@@ -58,6 +63,25 @@ class LastFM:  # noqa PLR0904
             response_list.extend(data.json()[parent_key][list_key])
         return response_list
 
+    def get_search_data(
+        self, payload: dict, parent_key: str, list_key: str, amount: int
+    ) -> list[dict]:
+        responses = self.request_controller.request_search_pages(
+            payload, parent_key, list_key, amount
+        )
+        response_list = []
+        for index, data in enumerate(responses, start=1):
+            if index == len(responses):
+                left_data = amount % LIMIT_SEARCH
+                response_list.extend(
+                    data.json()['results'][parent_key][list_key][:left_data]
+                )
+            else:
+                response_list.extend(
+                    data.json()['results'][parent_key][list_key]
+                )
+        return response_list
+
     #########################################################################
     # CHARTS
     #########################################################################
@@ -84,7 +108,7 @@ class LastFM:  # noqa PLR0904
         artist: str = None,
         mbid: str = None,
         autocorrect: Literal[0, 1] = 0,
-        lang: ISO639Alpha2Code = 'en',
+        lang: T_ISO639Alpha2Code = 'en',
         username: str = None,
     ) -> dict:
         if not (artist and album) and not mbid:
@@ -148,6 +172,10 @@ class LastFM:  # noqa PLR0904
             'autocorrect': autocorrect,
         }
         return self.request_controller.request(payload).json()['tags']['tag']
+
+    def search_album(self, album: str, amount: int = None) -> list[dict]:
+        payload = {'method': ALBUM_SEARCH, 'album': album}
+        return self.get_search_data(payload, 'albummatches', 'album', amount)
 
     #########################################################################
     # ARTIST
@@ -276,6 +304,10 @@ class LastFM:  # noqa PLR0904
             'similarartists'
         ]['artist']
 
+    def search_artist(self, artist: str, amount: int = None) -> list[dict]:
+        payload = {'method': ARTIST_SEARCH, 'artist': artist}
+        return self.get_search_data(payload, 'artistmatches', 'artist', amount)
+
     #########################################################################
     # TRACK
     #########################################################################
@@ -377,9 +409,21 @@ class LastFM:  # noqa PLR0904
             'similartracks'
         ]['track']
 
-    # def search_album(self, album: str) -> list[dict]:
-    #     payload = {'method': ALBUM_SEARCH, 'album': album, 'limit': LIMIT}
-    #     return self.get_paginated_data(payload, 'results', 'album')
+    def search_track(
+        self, track: str, artist: str = None, amount: int = None
+    ) -> list[dict]:
+        payload = {'method': TRACK_SEARCH, 'track': track, 'artist': artist}
+        return self.get_search_data(payload, 'trackmatches', 'track', amount)
+
+    def get_track_correction(self, track: str, artist: str) -> list[dict]:
+        payload = {
+            'method': TRACK_GETCORRECTION,
+            'track': track,
+            'artist': artist,
+        }
+        return self.request_controller.request(payload).json()['corrections'][
+            'correction'
+        ]['track']
 
     #########################################################################
     # USER
@@ -419,9 +463,9 @@ class LastFM:  # noqa PLR0904
     #         'tag': tag,
     #         'taggingtype': taggingtype,
     #     }
-    # match taggingtype:
-    #     case 'artist':
-    #     return self.get_paginated_data(payload, 'artists', 'artist')
+    #     match taggingtype:
+    #         case 'artist':
+    #             return self.get_paginated_data(payload, 'artists', 'artist')
 
     def get_user_top_albums(
         self, user: str, period: T_Period = 'overall', amount: int = None

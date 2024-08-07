@@ -1,7 +1,12 @@
 import pytest
 
 from pylastfm.client import LastFM
-from pylastfm.constants import ALBUM_GETINFO, ALBUM_GETTAGS, ALBUM_GETTOPTAGS
+from pylastfm.constants import (
+    ALBUM_GETINFO,
+    ALBUM_GETTAGS,
+    ALBUM_GETTOPTAGS,
+    ALBUM_SEARCH,
+)
 from pylastfm.exceptions import LastFMException
 
 #########################################################################
@@ -400,3 +405,59 @@ def test_get_album_top_tags_with_parameters(mocker):
         'autocorrect': autocorrect,
     })
     assert response == return_value['tags']['tag']
+
+
+# #########################################################################
+# # SEARCH ALBUM
+# #########################################################################
+
+
+def test_search_album(mocker):
+    album = 'albumname'
+    return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
+
+    mock_get_search_data = mocker.patch.object(
+        LastFM,
+        'get_search_data',
+        return_value=return_value,
+    )
+    client = LastFM('user_agent_test', 'api_key_test')
+    ##
+    response = client.search_album(album=album)
+    ##
+    mock_get_search_data.assert_called_with(
+        {
+            'method': ALBUM_SEARCH,
+            'album': album,
+        },
+        'albummatches',
+        'album',
+        None,
+    )
+    assert response == return_value
+
+
+def test_search_album_with_parameters(mocker):
+    album = 'albumname'
+    amount = 10
+    return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
+
+    mock_get_search_data = mocker.patch.object(
+        LastFM,
+        'get_search_data',
+        return_value=return_value,
+    )
+    client = LastFM('user_agent_test', 'api_key_test')
+    ##
+    response = client.search_album(album=album, amount=amount)
+    ##
+    mock_get_search_data.assert_called_with(
+        {
+            'method': ALBUM_SEARCH,
+            'album': album,
+        },
+        'albummatches',
+        'album',
+        amount,
+    )
+    assert response == return_value

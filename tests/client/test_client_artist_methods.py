@@ -8,6 +8,7 @@ from pylastfm.constants import (
     ARTIST_GETTOPALBUMS,
     ARTIST_GETTOPTAGS,
     ARTIST_GETTOPTRACKS,
+    ARTIST_SEARCH,
 )
 from pylastfm.exceptions import LastFMException
 
@@ -679,3 +680,59 @@ def test_get_artist_similar_with_parameters(mocker):
         'limit': limit,
     })
     assert response == return_value['similarartists']['artist']
+
+
+# #########################################################################
+# # SEARCH ARTIST
+# #########################################################################
+
+
+def test_search_artist(mocker):
+    artist = 'artistname'
+    return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
+
+    mock_get_search_data = mocker.patch.object(
+        LastFM,
+        'get_search_data',
+        return_value=return_value,
+    )
+    client = LastFM('user_agent_test', 'api_key_test')
+    ##
+    response = client.search_artist(artist=artist)
+    ##
+    mock_get_search_data.assert_called_with(
+        {
+            'method': ARTIST_SEARCH,
+            'artist': artist,
+        },
+        'artistmatches',
+        'artist',
+        None,
+    )
+    assert response == return_value
+
+
+def test_search_artist_with_parameters(mocker):
+    artist = 'artistname'
+    amount = 10
+    return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
+
+    mock_get_search_data = mocker.patch.object(
+        LastFM,
+        'get_search_data',
+        return_value=return_value,
+    )
+    client = LastFM('user_agent_test', 'api_key_test')
+    ##
+    response = client.search_artist(artist=artist, amount=amount)
+    ##
+    mock_get_search_data.assert_called_with(
+        {
+            'method': ARTIST_SEARCH,
+            'artist': artist,
+        },
+        'artistmatches',
+        'artist',
+        amount,
+    )
+    assert response == return_value

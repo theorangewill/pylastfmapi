@@ -3,7 +3,7 @@ from unittest.mock import call
 
 import pytest
 
-from pylastfm.constants import LIMIT
+from pylastfm.constants import LIMIT, LIMIT_SEARCH
 from pylastfm.exceptions import RequestErrorException
 from pylastfm.request import RequestController
 
@@ -160,7 +160,7 @@ def test_request_all_pages(mocker):
     assert len(_list) == amount
 
 
-def test_request_all_page_receive_page_with_no_data(mocker, capfd):
+def test_request_all_pages_receive_page_with_no_data(mocker, capfd):
     user_agent_test = 'user_agent_test'
     api_key_test = 'api_key_test'
     payload = {'method': 'method-name'}
@@ -180,7 +180,9 @@ def test_request_all_page_receive_page_with_no_data(mocker, capfd):
         mock_responses.append(mock_response)
     mock_response = mocker.Mock()
     mock_response.status_code = HTTPStatus.OK
-    mock_response.json.return_value = {'parent': {'list': []}}
+    mock_response.json.return_value = {
+        'parent': {'list': [], '@attr': {'totalPages': total_pages}}
+    }
     mock_responses.append(mock_response)
     mock_request = mocker.patch.object(RequestController, 'request')
     mock_request.side_effect = mock_responses
@@ -200,7 +202,7 @@ def test_request_all_page_receive_page_with_no_data(mocker, capfd):
     assert len(_list) == amount - LIMIT
 
 
-def test_request_all_page_from_cache(mocker):
+def test_request_all_pages_from_cache(mocker):
     user_agent_test = 'user_agent_test'
     api_key_test = 'api_key_test'
     payload = {'method': 'method-name'}
@@ -234,7 +236,7 @@ def test_request_all_page_from_cache(mocker):
     assert len(_list) == amount
 
 
-def test_request_all_page_amount_lower_than_limit(mocker):
+def test_request_all_pages_amount_lower_than_limit(mocker):
     user_agent_test = 'user_agent_test'
     api_key_test = 'api_key_test'
     payload = {'method': 'method-name'}
@@ -271,7 +273,7 @@ def test_request_all_page_amount_lower_than_limit(mocker):
     assert len(_list) == amount
 
 
-def test_request_all_page_amount_higher_than_limit_lower_than_total(mocker):
+def test_request_all_pages_amount_higher_than_limit_lower_than_total(mocker):
     user_agent_test = 'user_agent_test'
     api_key_test = 'api_key_test'
     payload = {'method': 'method-name'}
@@ -327,7 +329,7 @@ def test_request_all_page_amount_higher_than_limit_lower_than_total(mocker):
     assert len(_list) == amount
 
 
-def test_request_all_page_amount_higher_than_limit_higher_than_total(mocker):
+def test_request_all_pages_amount_higher_than_limit_higher_than_total(mocker):
     user_agent_test = 'user_agent_test'
     api_key_test = 'api_key_test'
     payload = {'method': 'method-name'}
@@ -367,6 +369,272 @@ def test_request_all_page_amount_higher_than_limit_higher_than_total(mocker):
     for r in response:
         _list.extend(r.json()['parent']['list'])
     assert len(_list) == LIMIT * total_pages
+
+
+##############################################################################
+# Test request_search_pages
+##############################################################################
+
+
+def test_request_search_pages(mocker):
+    user_agent_test = 'user_agent_test'
+    api_key_test = 'api_key_test'
+    payload = {'method': 'method-name'}
+    amount = LIMIT_SEARCH * 4
+    total_pages = 4
+    # Mock request responses
+    mock_responses = []
+    for _ in range(total_pages):
+        mock_response = mocker.Mock()
+        mock_response.status_code = HTTPStatus.OK
+        mock_response.json.return_value = {
+            'results': {
+                'parent': {
+                    'list': [2] * LIMIT_SEARCH,
+                },
+                'opensearch:totalResults': amount,
+            }
+        }
+        mock_responses.append(mock_response)
+    mock_request = mocker.patch.object(RequestController, 'request')
+    mock_request.side_effect = mock_responses
+    ###
+    controller = RequestController(user_agent_test, api_key_test)
+    ##
+    response = controller.request_search_pages(
+        payload, 'parent', 'list', amount
+    )
+    ##
+    assert mock_request.call_count == total_pages
+    assert len(response) == total_pages
+    _list = []
+    for r in response:
+        _list.extend(r.json()['results']['parent']['list'])
+    assert len(_list) == amount
+
+
+def test_request_search_pages_receive_page_with_no_data(mocker, capfd):
+    user_agent_test = 'user_agent_test'
+    api_key_test = 'api_key_test'
+    payload = {'method': 'method-name'}
+    amount = LIMIT_SEARCH * 4
+    total_pages = 4
+    # Mock request responses
+    mock_responses = []
+    for _ in range(total_pages - 1):
+        mock_response = mocker.Mock()
+        mock_response.status_code = HTTPStatus.OK
+        mock_response.json.return_value = {
+            'results': {
+                'parent': {
+                    'list': [2] * LIMIT_SEARCH,
+                },
+                'opensearch:totalResults': total_pages * LIMIT_SEARCH,
+            }
+        }
+        mock_responses.append(mock_response)
+    mock_response = mocker.Mock()
+    mock_response.status_code = HTTPStatus.OK
+    mock_response.json.return_value = {
+        'results': {
+            'parent': {'list': [], '@attr': {'totalPages': total_pages}},
+            'opensearch:totalResults': total_pages * LIMIT_SEARCH,
+        }
+    }
+    mock_responses.append(mock_response)
+    mock_request = mocker.patch.object(RequestController, 'request')
+    mock_request.side_effect = mock_responses
+    ##
+    controller = RequestController(user_agent_test, api_key_test)
+    ##
+    response = controller.request_search_pages(
+        payload, 'parent', 'list', amount
+    )
+    ##
+    assert mock_request.call_count == 4  # noqa: PLR2004
+    assert len(response) == 3  # noqa: PLR2004
+    assert (
+        'No more results, but there are more pages\n' in capfd.readouterr().out
+    )
+    _list = []
+    for r in response:
+        _list.extend(r.json()['results']['parent']['list'])
+    assert len(_list) == amount - LIMIT_SEARCH
+
+
+def test_request_search_pages_from_cache(mocker):
+    user_agent_test = 'user_agent_test'
+    api_key_test = 'api_key_test'
+    payload = {'method': 'method-name'}
+    amount = LIMIT_SEARCH * 4
+    total_pages = 4
+    # Mock request responses
+    mock_responses = []
+    for page in range(total_pages):
+        mock_response = mocker.Mock()
+        mock_response.status_code = HTTPStatus.OK
+        mock_response.from_cache = page % 2 == 0
+        mock_response.json.return_value = {
+            'results': {
+                'parent': {
+                    'list': [2] * LIMIT_SEARCH,
+                },
+                'opensearch:totalResults': amount,
+            }
+        }
+        mock_responses.append(mock_response)
+    mock_request = mocker.patch.object(RequestController, 'request')
+    mock_request.side_effect = mock_responses
+    ##
+    controller = RequestController(user_agent_test, api_key_test)
+    ##
+    response = controller.request_search_pages(
+        payload, 'parent', 'list', amount
+    )
+    ##
+    assert mock_request.call_count == total_pages
+    assert len(response) == total_pages
+    _list = []
+    for r in response:
+        _list.extend(r.json()['results']['parent']['list'])
+    assert len(_list) == amount
+
+
+def test_request_search_pages_amount_lower_than_limit(mocker):
+    user_agent_test = 'user_agent_test'
+    api_key_test = 'api_key_test'
+    payload = {'method': 'method-name'}
+    total_pages = 4
+    amount = LIMIT_SEARCH - 1
+    # Mock request responses
+    mock_responses = []
+    for page in range(total_pages):
+        mock_response = mocker.Mock()
+        mock_response.status_code = HTTPStatus.OK
+        mock_response.from_cache = page % 2 == 0
+        mock_response.json.return_value = {
+            'results': {
+                'parent': {
+                    'list': [2] * LIMIT_SEARCH,
+                },
+                'opensearch:totalResults': LIMIT_SEARCH * total_pages,
+            }
+        }
+        mock_responses.append(mock_response)
+    mock_request = mocker.patch.object(RequestController, 'request')
+    mock_request.side_effect = mock_responses
+    ##
+    controller = RequestController(user_agent_test, api_key_test)
+    ##
+    response = controller.request_search_pages(
+        payload, 'parent', 'list', amount
+    )
+    ##
+    assert mock_request.call_count == 1  # noqa: PLR2004
+    mock_request.assert_has_calls([
+        call({'method': 'method-name', 'limit': amount, 'page': 1})
+    ])
+    assert len(response) == 1  # noqa: PLR2004
+    _list = []
+    for r in response:
+        _list.extend(r.json()['results']['parent']['list'])
+    assert len(_list) == LIMIT_SEARCH
+
+
+def test_request_search_pages_amount_higher_than_limit_lower_than_total(
+    mocker,
+):
+    user_agent_test = 'user_agent_test'
+    api_key_test = 'api_key_test'
+    payload = {'method': 'method-name'}
+    total_pages = 4
+    amount = LIMIT_SEARCH * 3 - 1
+    # Mock request responses
+    mock_responses = []
+    for page in range(total_pages):
+        mock_response = mocker.Mock()
+        mock_response.status_code = HTTPStatus.OK
+        mock_response.from_cache = page % 2 == 0
+        mock_response.json.return_value = {
+            'results': {
+                'parent': {
+                    'list': [2] * LIMIT_SEARCH,
+                },
+                'opensearch:totalResults': total_pages * LIMIT_SEARCH,
+            }
+        }
+        mock_responses.append(mock_response)
+    mock_responses.append(mock_response)
+    mock_request = mocker.patch.object(RequestController, 'request')
+    mock_request.side_effect = mock_responses
+    ##
+    controller = RequestController(user_agent_test, api_key_test)
+    ##
+    response = controller.request_search_pages(
+        payload, 'parent', 'list', amount
+    )
+    ##
+    assert mock_request.call_count == 3  # noqa: PLR2004
+    mock_request.assert_has_calls(
+        [
+            call({'method': 'method-name', 'limit': LIMIT_SEARCH, 'page': 1}),
+            call({'method': 'method-name', 'limit': LIMIT_SEARCH, 'page': 2}),
+            call({'method': 'method-name', 'limit': LIMIT_SEARCH, 'page': 3}),
+        ],
+    )
+    assert len(response) == 3  # noqa: PLR2004
+    _list = []
+    for r in response:
+        _list.extend(r.json()['results']['parent']['list'])
+    assert len(_list) == LIMIT_SEARCH * 3
+
+
+def test_request_search_pages_amount_higher_than_limit_higher_than_total(
+    mocker,
+):
+    user_agent_test = 'user_agent_test'
+    api_key_test = 'api_key_test'
+    payload = {'method': 'method-name'}
+    total_pages = 4
+    amount = LIMIT_SEARCH * 10 - 1
+    # Mock request responses
+    mock_responses = []
+    for page in range(total_pages):
+        mock_response = mocker.Mock()
+        mock_response.status_code = HTTPStatus.OK
+        mock_response.from_cache = page % 2 == 0
+        mock_response.json.return_value = {
+            'results': {
+                'parent': {
+                    'list': [2] * LIMIT_SEARCH,
+                },
+                'opensearch:totalResults': total_pages * LIMIT_SEARCH,
+            }
+        }
+        mock_responses.append(mock_response)
+    mock_request = mocker.patch.object(RequestController, 'request')
+    mock_request.side_effect = mock_responses
+    ##
+    controller = RequestController(user_agent_test, api_key_test)
+    ##
+    response = controller.request_search_pages(
+        payload, 'parent', 'list', amount
+    )
+    ##
+    assert mock_request.call_count == total_pages
+    mock_request.assert_has_calls(
+        [
+            call({'method': 'method-name', 'limit': LIMIT_SEARCH, 'page': 1}),
+            call({'method': 'method-name', 'limit': LIMIT_SEARCH, 'page': 2}),
+            call({'method': 'method-name', 'limit': LIMIT_SEARCH, 'page': 3}),
+            call({'method': 'method-name', 'limit': LIMIT_SEARCH, 'page': 4}),
+        ],
+    )
+    assert len(response) == total_pages
+    _list = []
+    for r in response:
+        _list.extend(r.json()['results']['parent']['list'])
+    assert len(_list) == LIMIT_SEARCH * total_pages
 
 
 ##############################################################################

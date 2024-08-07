@@ -2,7 +2,7 @@ from typing import Literal
 
 T_Period = Literal['overall', '7day', '1month', '3month', '6month', '12month']
 
-ISO639Alpha2Code = Literal[
+T_ISO639Alpha2Code = Literal[
     'aa',
     'ab',
     'af',

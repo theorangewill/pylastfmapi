@@ -1,10 +1,11 @@
 URL = 'https://ws.audioscrobbler.com/2.0/'
 LIMIT = 500
+LIMIT_SEARCH = 50
 
 ALBUM_GETINFO = 'album.getInfo'
 ALBUM_GETTAGS = 'album.getTags'
 ALBUM_GETTOPTAGS = 'album.getTopTags'
-# ALBUM_SEARCH = 'album.search'
+ALBUM_SEARCH = 'album.search'
 
 ARTIST_GETINFO = 'artist.getInfo'
 ARTIST_GETSIMILAR = 'artist.getSimilar'
@@ -12,17 +13,18 @@ ARTIST_GETTAGS = 'artist.getTags'
 ARTIST_GETTOPALBUMS = 'artist.getTopAlbums'
 ARTIST_GETTOPTAGS = 'artist.getTopTags'
 ARTIST_GETTOPTRACKS = 'artist.getTopTracks'
-# ARTIST_SEARCH = 'artist.search'
+ARTIST_SEARCH = 'artist.search'
 
 CHART_GETTOPARTISTS = 'chart.getTopArtists'
 CHART_GETTOPTAGS = 'chart.getTopTags'
 CHART_GETTOPTRACKS = 'chart.getTopTracks'
 
+TRACK_GETCORRECTION = 'track.getCorrection'
 TRACK_GETINFO = 'track.getInfo'
 TRACK_GETSIMILAR = 'track.getSimilar'
 TRACK_GETTAGS = 'track.getTags'
 TRACK_GETTOPTAGS = 'track.getTopTags'
-# TRACK_SEARCH = 'track.search'
+TRACK_SEARCH = 'track.search'
 
 USER_GETFRIENDS = 'user.getFriends'
 USER_GETINFO = 'user.getInfo'

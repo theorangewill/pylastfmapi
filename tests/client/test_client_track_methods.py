@@ -2,10 +2,12 @@ import pytest
 
 from pylastfm.client import LastFM
 from pylastfm.constants import (
+    TRACK_GETCORRECTION,
     TRACK_GETINFO,
     TRACK_GETSIMILAR,
     TRACK_GETTAGS,
     TRACK_GETTOPTAGS,
+    TRACK_SEARCH,
 )
 from pylastfm.exceptions import LastFMException
 
@@ -527,3 +529,89 @@ def test_get_track_similar_with_parameters(mocker):
         'limit': limit,
     })
     assert response == return_value['similartracks']['track']
+
+
+# #########################################################################
+# # SEARCH TRACK
+# #########################################################################
+
+
+def test_search_track(mocker):
+    track = 'trackname'
+    return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
+
+    mock_get_search_data = mocker.patch.object(
+        LastFM,
+        'get_search_data',
+        return_value=return_value,
+    )
+    client = LastFM('user_agent_test', 'api_key_test')
+    ##
+    response = client.search_track(track=track)
+    ##
+    mock_get_search_data.assert_called_with(
+        {'method': TRACK_SEARCH, 'track': track, 'artist': None},
+        'trackmatches',
+        'track',
+        None,
+    )
+    assert response == return_value
+
+
+def test_search_track_with_parameters(mocker):
+    track = 'trackname'
+    artist = 'artistname'
+    amount = 10
+    return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
+
+    mock_get_search_data = mocker.patch.object(
+        LastFM,
+        'get_search_data',
+        return_value=return_value,
+    )
+    client = LastFM('user_agent_test', 'api_key_test')
+    ##
+    response = client.search_track(track=track, artist=artist, amount=amount)
+    ##
+    mock_get_search_data.assert_called_with(
+        {'method': TRACK_SEARCH, 'track': track, 'artist': artist},
+        'trackmatches',
+        'track',
+        amount,
+    )
+    assert response == return_value
+
+
+# #########################################################################
+# # GET TRACK CORRECTION
+# #########################################################################
+
+
+def test_get_track_correction(mocker):
+    track = 'trackname'
+    artist = 'artistname'
+    return_value = {
+        'corrections': {'correction': {'track': {'name': 'Tag Name'}}}
+    }
+
+    MockRequestController = mocker.patch(
+        'pylastfm.client.RequestController', autospec=True
+    )
+    mock_request_controller = MockRequestController.return_value
+    mock_response = mocker.Mock().return_value
+    mock_response.json.return_value = return_value
+    mock_request_controller.request.return_value = mock_response
+
+    client = LastFM('user_agent_test', 'api_key_test')
+    ##
+    response = client.get_track_correction(
+        track=track,
+        artist=artist,
+    )
+    ##
+    mock_request_controller.request.assert_called_with({
+        'method': TRACK_GETCORRECTION,
+        'track': track,
+        'artist': artist,
+    })
+    assert response == return_value['corrections']['correction']['track']
