@@ -591,7 +591,7 @@ def test_get_track_correction(mocker):
     track = 'trackname'
     artist = 'artistname'
     return_value = {
-        'corrections': {'correction': {'track': {'name': 'Tag Name'}}}
+        'corrections': {'correction': {'track': {'name': 'Track Name'}}}
     }
 
     MockRequestController = mocker.patch(

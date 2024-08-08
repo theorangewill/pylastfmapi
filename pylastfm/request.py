@@ -72,7 +72,6 @@ class RequestController:
             content = response.json()
 
             if len(content[parent_key][list_key]) == 0:
-                print('No more results, but there are more pages')
                 break
             if not getattr(response, 'from_cache', False):
                 time.sleep(0.25)
@@ -107,7 +106,6 @@ class RequestController:
             content = response.json()
 
             if len(content['results'][parent_key][list_key]) == 0:
-                print('No more results, but there are more pages')
                 break
             if not getattr(response, 'from_cache', False):
                 time.sleep(0.25)

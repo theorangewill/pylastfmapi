@@ -1,12 +1,14 @@
 URL = 'https://ws.audioscrobbler.com/2.0/'
 LIMIT = 500
 LIMIT_SEARCH = 50
+MAX_WEEKLY_CHART = 1000
 
 ALBUM_GETINFO = 'album.getInfo'
 ALBUM_GETTAGS = 'album.getTags'
 ALBUM_GETTOPTAGS = 'album.getTopTags'
 ALBUM_SEARCH = 'album.search'
 
+ARTIST_GETCORRECTION = 'artist.getCorrection'
 ARTIST_GETINFO = 'artist.getInfo'
 ARTIST_GETSIMILAR = 'artist.getSimilar'
 ARTIST_GETTAGS = 'artist.getTags'
@@ -18,6 +20,11 @@ ARTIST_SEARCH = 'artist.search'
 CHART_GETTOPARTISTS = 'chart.getTopArtists'
 CHART_GETTOPTAGS = 'chart.getTopTags'
 CHART_GETTOPTRACKS = 'chart.getTopTracks'
+
+GEO_GETTOPARTISTS = 'geo.getTOPArtists'
+GEO_GETOPTRACKS = 'geo.getTOPTracks'
+
+LIBRARY_GETARTISTS = 'library.getArtists'
 
 TRACK_GETCORRECTION = 'track.getCorrection'
 TRACK_GETINFO = 'track.getInfo'
@@ -37,5 +44,4 @@ USER_GETTOPTAGS = 'user.getTopTags'
 USER_GETTOPTRACKS = 'user.getTopTracks'
 USER_GETWEEKLYALBUMCHART = 'user.getWeeklyAlbumChart'
 USER_GETWEEKLYARTISTCHART = 'user.getWeeklyArtistChart'
-USER_GETWEEKLYCHARTLIST = 'user.getWeeklyChartList'
-USER_GETWEEKLYTRACKLIST = 'user.getWeeklyTrackList'
+USER_GETWEEKLYTRACKCHART = 'user.getWeeklyTrackChart'

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Literal
 
 from pylastfm.constants import (
@@ -5,6 +6,7 @@ from pylastfm.constants import (
     ALBUM_GETTAGS,
     ALBUM_GETTOPTAGS,
     ALBUM_SEARCH,
+    ARTIST_GETCORRECTION,
     ARTIST_GETINFO,
     ARTIST_GETSIMILAR,
     ARTIST_GETTAGS,
@@ -15,7 +17,11 @@ from pylastfm.constants import (
     CHART_GETTOPARTISTS,
     CHART_GETTOPTAGS,
     CHART_GETTOPTRACKS,
+    GEO_GETOPTRACKS,
+    GEO_GETTOPARTISTS,
+    LIBRARY_GETARTISTS,
     LIMIT_SEARCH,
+    MAX_WEEKLY_CHART,
     TRACK_GETCORRECTION,
     TRACK_GETINFO,
     TRACK_GETSIMILAR,
@@ -25,14 +31,22 @@ from pylastfm.constants import (
     USER_GETFRIENDS,
     USER_GETINFO,
     USER_GETLOVEDTRACKS,
+    USER_GETRECENTTRACKS,
     USER_GETTOPALBUMS,
     USER_GETTOPARTISTS,
     USER_GETTOPTAGS,
     USER_GETTOPTRACKS,
+    USER_GETWEEKLYALBUMCHART,
+    USER_GETWEEKLYARTISTCHART,
+    USER_GETWEEKLYTRACKCHART,
 )
 from pylastfm.exceptions import LastFMException
 from pylastfm.request import RequestController
-from pylastfm.typehints import T_ISO639Alpha2Code, T_Period
+from pylastfm.typehints import (
+    T_ISO639Alpha2Code,
+    T_ISO3166CountryNames,
+    T_Period,
+)
 
 
 class LastFM:  # noqa PLR0904
@@ -308,6 +322,15 @@ class LastFM:  # noqa PLR0904
         payload = {'method': ARTIST_SEARCH, 'artist': artist}
         return self.get_search_data(payload, 'artistmatches', 'artist', amount)
 
+    def get_artist_correction(self, artist: str) -> list[dict]:
+        payload = {
+            'method': ARTIST_GETCORRECTION,
+            'artist': artist,
+        }
+        return self.request_controller.request(payload).json()['corrections'][
+            'correction'
+        ]['artist']
+
     #########################################################################
     # TRACK
     #########################################################################
@@ -450,6 +473,12 @@ class LastFM:  # noqa PLR0904
         }
         return self.get_paginated_data(payload, 'lovedtracks', 'track', amount)
 
+    def get_user_library_artists(
+        self, user: str, amount: int = None
+    ) -> list[dict]:
+        payload = {'method': LIBRARY_GETARTISTS, 'user': user}
+        return self.get_paginated_data(payload, 'artists', 'artist', amount)
+
     # def get_user_personal_tags(  # noqa PLR0917
     #     self,
     #     user: str,
@@ -503,3 +532,274 @@ class LastFM:  # noqa PLR0904
             'user': user,
         }
         return self.get_paginated_data(payload, 'toptags', 'tag', amount)
+
+    def get_user_weekly_album_chart(
+        self,
+        user: str,
+        amount: int = None,
+        date_from: str = None,
+        date_to: str = None,
+    ) -> dict:
+        if amount and amount > MAX_WEEKLY_CHART:
+            raise LastFMException(
+                'For this request, the maximum "amount" is 1000'
+            )
+        if date_from and date_to:
+            if date_from >= date_to:
+                raise LastFMException(
+                    'The params "date_from" should be lower than "date_to"'
+                )
+            try:
+                if len(date_from) == len('YYYY-MM-DD'):
+                    timestamp_from = int(
+                        datetime.strptime(date_from, '%Y-%m-%d').timestamp()
+                    )
+                else:
+                    timestamp_from = int(
+                        datetime.strptime(
+                            date_from, '%Y-%m-%d %H:%M'
+                        ).timestamp()
+                    )
+                if len(date_to) == len('YYYY-MM-DD'):
+                    timestamp_to = int(
+                        datetime.strptime(date_to, '%Y-%m-%d').timestamp()
+                    )
+                else:
+                    timestamp_to = int(
+                        datetime.strptime(
+                            date_to, '%Y-%m-%d %H:%M'
+                        ).timestamp()
+                    )
+            except ValueError as e:
+                raise LastFMException(
+                    'The params "date_from" and "date_to" should be a valid '
+                    'date and in "YYYY-MM-DD" or "YYYY-MM-DD %H:%M" format: '
+                    f'{e}'
+                )
+        elif date_from or date_to:
+            raise LastFMException(
+                'The params "date_from" and "date_to" should be given '
+                'together'
+            )
+        else:
+            timestamp_from, timestamp_to = None, None
+
+        payload = {
+            'method': USER_GETWEEKLYALBUMCHART,
+            'user': user,
+            'limit': amount,
+            'from': timestamp_from,
+            'to': timestamp_to,
+        }
+        return self.request_controller.request(payload).json()[
+            'weeklyalbumchart'
+        ]['album']
+
+    def get_user_weekly_artist_chart(
+        self,
+        user: str,
+        amount: int = None,
+        date_from: str = None,
+        date_to: str = None,
+    ) -> dict:
+        if amount and amount > MAX_WEEKLY_CHART:
+            raise LastFMException(
+                'For this request, the maximum "amount" is 1000'
+            )
+        if date_from and date_to:
+            if date_from >= date_to:
+                raise LastFMException(
+                    'The params "date_from" should be lower than "date_to"'
+                )
+            try:
+                if len(date_from) == len('YYYY-MM-DD'):
+                    timestamp_from = int(
+                        datetime.strptime(date_from, '%Y-%m-%d').timestamp()
+                    )
+                else:
+                    timestamp_from = int(
+                        datetime.strptime(
+                            date_from, '%Y-%m-%d %H:%M'
+                        ).timestamp()
+                    )
+                if len(date_to) == len('YYYY-MM-DD'):
+                    timestamp_to = int(
+                        datetime.strptime(date_to, '%Y-%m-%d').timestamp()
+                    )
+                else:
+                    timestamp_to = int(
+                        datetime.strptime(
+                            date_to, '%Y-%m-%d %H:%M'
+                        ).timestamp()
+                    )
+            except ValueError as e:
+                raise LastFMException(
+                    'The params "date_from" and "date_to" should be a valid '
+                    'date and in "YYYY-MM-DD" or "YYYY-MM-DD %H:%M" format: '
+                    f'{e}'
+                )
+        elif date_from or date_to:
+            raise LastFMException(
+                'The params "date_from" and "date_to" should be given '
+                'together'
+            )
+        else:
+            timestamp_from, timestamp_to = None, None
+
+        payload = {
+            'method': USER_GETWEEKLYARTISTCHART,
+            'user': user,
+            'limit': amount,
+            'from': timestamp_from,
+            'to': timestamp_to,
+        }
+        return self.request_controller.request(payload).json()[
+            'weeklyartistchart'
+        ]['artist']
+
+    def get_user_weekly_track_chart(
+        self,
+        user: str,
+        amount: int = None,
+        date_from: str = None,
+        date_to: str = None,
+    ) -> dict:
+        if amount and amount > MAX_WEEKLY_CHART:
+            raise LastFMException(
+                'For this request, the maximum "amount" is 1000'
+            )
+        if date_from and date_to:
+            if date_from >= date_to:
+                raise LastFMException(
+                    'The params "date_from" should be lower than "date_to"'
+                )
+            try:
+                if len(date_from) == len('YYYY-MM-DD'):
+                    timestamp_from = int(
+                        datetime.strptime(date_from, '%Y-%m-%d').timestamp()
+                    )
+                else:
+                    timestamp_from = int(
+                        datetime.strptime(
+                            date_from, '%Y-%m-%d %H:%M'
+                        ).timestamp()
+                    )
+                if len(date_to) == len('YYYY-MM-DD'):
+                    timestamp_to = int(
+                        datetime.strptime(date_to, '%Y-%m-%d').timestamp()
+                    )
+                else:
+                    timestamp_to = int(
+                        datetime.strptime(
+                            date_to, '%Y-%m-%d %H:%M'
+                        ).timestamp()
+                    )
+            except ValueError as e:
+                raise LastFMException(
+                    'The params "date_from" and "date_to" should be a valid '
+                    'date and in "YYYY-MM-DD" or "YYYY-MM-DD %H:%M" format: '
+                    f'{e}'
+                )
+        elif date_from or date_to:
+            raise LastFMException(
+                'The params "date_from" and "date_to" should be given '
+                'together'
+            )
+        else:
+            timestamp_from, timestamp_to = None, None
+
+        payload = {
+            'method': USER_GETWEEKLYTRACKCHART,
+            'user': user,
+            'limit': amount,
+            'from': timestamp_from,
+            'to': timestamp_to,
+        }
+        return self.request_controller.request(payload).json()[
+            'weeklytrackchart'
+        ]['track']
+
+    def get_user_recent_tracks(
+        self,
+        user: str,
+        amount: int = None,
+        date_from: str = None,
+        date_to: str = None,
+        extended: bool = False,
+    ) -> dict:
+        if date_from and date_to:
+            if date_from >= date_to:
+                raise LastFMException(
+                    'The params "date_from" should be lower than "date_to"'
+                )
+            try:
+                if len(date_from) == len('YYYY-MM-DD'):
+                    timestamp_from = int(
+                        datetime.strptime(date_from, '%Y-%m-%d').timestamp()
+                    )
+                else:
+                    timestamp_from = int(
+                        datetime.strptime(
+                            date_from, '%Y-%m-%d %H:%M'
+                        ).timestamp()
+                    )
+                if len(date_to) == len('YYYY-MM-DD'):
+                    timestamp_to = int(
+                        datetime.strptime(date_to, '%Y-%m-%d').timestamp()
+                    )
+                else:
+                    timestamp_to = int(
+                        datetime.strptime(
+                            date_to, '%Y-%m-%d %H:%M'
+                        ).timestamp()
+                    )
+            except ValueError as e:
+                raise LastFMException(
+                    'The params "date_from" and "date_to" should be a valid '
+                    'date and in "YYYY-MM-DD" or "YYYY-MM-DD %H:%M" format: '
+                    f'{e}'
+                )
+        elif date_from or date_to:
+            raise LastFMException(
+                'The params "date_from" and "date_to" should be given '
+                'together'
+            )
+        else:
+            timestamp_from, timestamp_to = None, None
+
+        payload = {
+            'method': USER_GETRECENTTRACKS,
+            'user': user,
+            'from': timestamp_from,
+            'to': timestamp_to,
+            'extended': extended,
+        }
+        return self.get_paginated_data(
+            payload, 'recenttracks', 'track', amount
+        )
+
+    #########################################################################
+    # GEO
+    #########################################################################
+
+    def get_country_top_artists(
+        self, country: T_ISO3166CountryNames, amount: int = None
+    ) -> dict:
+        payload = {
+            'method': GEO_GETTOPARTISTS,
+            'country': country,
+        }
+        return self.get_paginated_data(payload, 'topartists', 'artist', amount)
+
+    def get_country_top_tracks(
+        self,
+        country: T_ISO3166CountryNames,
+        location: str = None,
+        amount: int = None,
+    ) -> dict:
+        payload = {
+            'method': GEO_GETOPTRACKS,
+            'location': location,
+            'country': country,
+        }
+        return self.get_paginated_data(payload, 'tracks', 'track', amount)

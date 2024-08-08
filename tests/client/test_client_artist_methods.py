@@ -2,6 +2,7 @@ import pytest
 
 from pylastfm.client import LastFM
 from pylastfm.constants import (
+    ARTIST_GETCORRECTION,
     ARTIST_GETINFO,
     ARTIST_GETSIMILAR,
     ARTIST_GETTAGS,
@@ -736,3 +737,35 @@ def test_search_artist_with_parameters(mocker):
         amount,
     )
     assert response == return_value
+
+
+# #########################################################################
+# # GET ARTIST CORRECTION
+# #########################################################################
+
+
+def test_get_artist_correction(mocker):
+    artist = 'artistname'
+    return_value = {
+        'corrections': {'correction': {'artist': {'name': 'Artist Name'}}}
+    }
+
+    MockRequestController = mocker.patch(
+        'pylastfm.client.RequestController', autospec=True
+    )
+    mock_request_controller = MockRequestController.return_value
+    mock_response = mocker.Mock().return_value
+    mock_response.json.return_value = return_value
+    mock_request_controller.request.return_value = mock_response
+
+    client = LastFM('user_agent_test', 'api_key_test')
+    ##
+    response = client.get_artist_correction(
+        artist=artist,
+    )
+    ##
+    mock_request_controller.request.assert_called_with({
+        'method': ARTIST_GETCORRECTION,
+        'artist': artist,
+    })
+    assert response == return_value['corrections']['correction']['artist']

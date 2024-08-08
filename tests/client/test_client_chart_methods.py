@@ -11,7 +11,7 @@ from pylastfm.constants import (
 
 
 def test_get_top_artists(mocker):
-    return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
+    return_value = [{'name': 'Artist Name'}, {'name': 'Artist Name'}]
 
     mock_get_paginated_data = mocker.patch.object(
         LastFM,
@@ -30,7 +30,7 @@ def test_get_top_artists(mocker):
 
 def test_get_top_artists_with_parameters(mocker):
     amount = 10
-    return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
+    return_value = [{'name': 'Artist Name'}, {'name': 'Artist Name'}]
 
     mock_get_paginated_data = mocker.patch.object(
         LastFM,
@@ -53,7 +53,7 @@ def test_get_top_artists_with_parameters(mocker):
 
 
 def test_get_top_tags(mocker):
-    return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
+    return_value = [{'name': 'Tag Name'}, {'name': 'Tag Name'}]
 
     mock_get_paginated_data = mocker.patch.object(
         LastFM,

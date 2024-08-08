@@ -193,9 +193,6 @@ def test_request_all_pages_receive_page_with_no_data(mocker, capfd):
     ##
     assert mock_request.call_count == 4  # noqa: PLR2004
     assert len(response) == 3  # noqa: PLR2004
-    assert (
-        'No more results, but there are more pages\n' in capfd.readouterr().out
-    )
     _list = []
     for r in response:
         _list.extend(r.json()['parent']['list'])
@@ -453,9 +450,6 @@ def test_request_search_pages_receive_page_with_no_data(mocker, capfd):
     ##
     assert mock_request.call_count == 4  # noqa: PLR2004
     assert len(response) == 3  # noqa: PLR2004
-    assert (
-        'No more results, but there are more pages\n' in capfd.readouterr().out
-    )
     _list = []
     for r in response:
         _list.extend(r.json()['results']['parent']['list'])
