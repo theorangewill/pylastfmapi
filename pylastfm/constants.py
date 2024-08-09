@@ -26,6 +26,14 @@ GEO_GETOPTRACKS = 'geo.getTOPTracks'
 
 LIBRARY_GETARTISTS = 'library.getArtists'
 
+TAG_GETINFO = 'tag.getInfo'
+TAG_GETSIMILAR = 'tag.getSimilar'
+TAG_GETTOPALBUMS = 'tag.getTopAlbums'
+TAG_GETTOPARTISTS = 'tag.getTopArtists'
+TAG_GETTOPTAGS = 'tag.getTopTags'
+TAG_GETTOPTRACKS = 'tag.getTopTracks'
+
+
 TRACK_GETCORRECTION = 'track.getCorrection'
 TRACK_GETINFO = 'track.getInfo'
 TRACK_GETSIMILAR = 'track.getSimilar'

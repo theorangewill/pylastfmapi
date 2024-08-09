@@ -22,6 +22,11 @@ from pylastfm.constants import (
     LIBRARY_GETARTISTS,
     LIMIT_SEARCH,
     MAX_WEEKLY_CHART,
+    TAG_GETINFO,
+    TAG_GETSIMILAR,
+    TAG_GETTOPALBUMS,
+    TAG_GETTOPARTISTS,
+    TAG_GETTOPTRACKS,
     TRACK_GETCORRECTION,
     TRACK_GETINFO,
     TRACK_GETSIMILAR,
@@ -31,6 +36,7 @@ from pylastfm.constants import (
     USER_GETFRIENDS,
     USER_GETINFO,
     USER_GETLOVEDTRACKS,
+    USER_GETPERSONALTAGS,
     USER_GETRECENTTRACKS,
     USER_GETTOPALBUMS,
     USER_GETTOPARTISTS,
@@ -479,22 +485,32 @@ class LastFM:  # noqa PLR0904
         payload = {'method': LIBRARY_GETARTISTS, 'user': user}
         return self.get_paginated_data(payload, 'artists', 'artist', amount)
 
-    # def get_user_personal_tags(  # noqa PLR0917
-    #     self,
-    #     user: str,
-    #     tag: str,
-    #     taggingtype: Literal['artist', 'album', 'track']
-    # ) -> dict:
-    #     payload = {
-    #         'method': USER_GETPERSONALTAGS,
-    #         'limit': LIMIT,
-    #         'user': user,
-    #         'tag': tag,
-    #         'taggingtype': taggingtype,
-    #     }
-    #     match taggingtype:
-    #         case 'artist':
-    #             return self.get_paginated_data(payload, 'artists', 'artist')
+    def get_user_personal_tags(  # noqa PLR0917
+        self,
+        user: str,
+        tag: str,
+        taggingtype: Literal['artist', 'album', 'track'],
+        amount: int = None,
+    ) -> dict:
+        payload = {
+            'method': USER_GETPERSONALTAGS,
+            'user': user,
+            'tag': tag,
+            'taggingtype': taggingtype,
+        }
+        match taggingtype:
+            case 'artist':
+                return self.get_paginated_data(
+                    payload, 'artists', 'artist', amount
+                )
+            case 'album':
+                return self.get_paginated_data(
+                    payload, 'albums', 'album', amount
+                )
+            case 'track':
+                return self.get_paginated_data(
+                    payload, 'tracks', 'track', amount
+                )
 
     def get_user_top_albums(
         self, user: str, period: T_Period = 'overall', amount: int = None
@@ -801,5 +817,43 @@ class LastFM:  # noqa PLR0904
             'method': GEO_GETOPTRACKS,
             'location': location,
             'country': country,
+        }
+        return self.get_paginated_data(payload, 'tracks', 'track', amount)
+
+    #########################################################################
+    # TAG
+    #########################################################################
+
+    def get_tag_info(self, tag: str, lang: T_ISO639Alpha2Code = 'en') -> dict:
+        payload = {'method': TAG_GETINFO, 'tag': tag, 'lang': lang}
+        return self.request_controller.request(payload).json()['tag']
+
+    def get_tag_similar(
+        self,
+        tag: str = None,
+    ) -> dict:
+        payload = {'method': TAG_GETSIMILAR, 'tag': tag}
+        return self.request_controller.request(payload).json()['similartags'][
+            'tag'
+        ]
+
+    def get_tag_top_albums(self, tag: str, amount: int = None) -> dict:
+        payload = {
+            'method': TAG_GETTOPALBUMS,
+            'tag': tag,
+        }
+        return self.get_paginated_data(payload, 'albums', 'album', amount)
+
+    def get_tag_top_artists(self, tag: str, amount: int = None) -> dict:
+        payload = {
+            'method': TAG_GETTOPARTISTS,
+            'tag': tag,
+        }
+        return self.get_paginated_data(payload, 'topartists', 'artist', amount)
+
+    def get_tag_top_tracks(self, tag: str, amount: int = None) -> dict:
+        payload = {
+            'method': TAG_GETTOPTRACKS,
+            'tag': tag,
         }
         return self.get_paginated_data(payload, 'tracks', 'track', amount)

@@ -71,13 +71,20 @@ class RequestController:
             response = self.request(payload)
             content = response.json()
 
-            if len(content[parent_key][list_key]) == 0:
+            if (
+                len(content.get('taggings', content)[parent_key][list_key])
+                == 0
+            ):
                 break
             if not getattr(response, 'from_cache', False):
                 time.sleep(0.25)
             responses.append(response)
 
-            if page == int(content[parent_key]['@attr']['totalPages']):
+            if page == int(
+                content.get('taggings', content)[parent_key]['@attr'][
+                    'totalPages'
+                ]
+            ):
                 break
             if num_pages and page == num_pages:
                 break

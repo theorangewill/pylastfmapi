@@ -12,7 +12,7 @@ from pylastfm.constants import (
 from pylastfm.exceptions import LastFMException
 
 #########################################################################
-# GET ARTIST INFO
+# GET TRACK INFO
 #########################################################################
 
 

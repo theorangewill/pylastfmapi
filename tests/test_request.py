@@ -368,6 +368,41 @@ def test_request_all_pages_amount_higher_than_limit_higher_than_total(mocker):
     assert len(_list) == LIMIT * total_pages
 
 
+def test_request_all_pages_with_tagging(mocker):
+    user_agent_test = 'user_agent_test'
+    api_key_test = 'api_key_test'
+    payload = {'method': 'method-name'}
+    amount = LIMIT * 4
+    total_pages = 4
+    # Mock request responses
+    mock_responses = []
+    for _ in range(total_pages):
+        mock_response = mocker.Mock()
+        mock_response.status_code = HTTPStatus.OK
+        mock_response.json.return_value = {
+            'taggings': {
+                'parent': {
+                    'list': [2] * LIMIT,
+                    '@attr': {'totalPages': total_pages},
+                }
+            }
+        }
+        mock_responses.append(mock_response)
+    mock_request = mocker.patch.object(RequestController, 'request')
+    mock_request.side_effect = mock_responses
+    ###
+    controller = RequestController(user_agent_test, api_key_test)
+    ##
+    response = controller.request_all_pages(payload, 'parent', 'list', amount)
+    ##
+    assert mock_request.call_count == total_pages
+    assert len(response) == total_pages
+    _list = []
+    for r in response:
+        _list.extend(r.json()['taggings']['parent']['list'])
+    assert len(_list) == amount
+
+
 ##############################################################################
 # Test request_search_pages
 ##############################################################################
