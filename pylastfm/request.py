@@ -79,13 +79,14 @@ class RequestController:
             if not getattr(response, 'from_cache', False):
                 time.sleep(0.25)
             responses.append(response)
+    
+            if 'taggings' in content:
+                if page == int(content['taggings']['@attr']['totalPages']):
+                    break
+            else:
+                if page == int(content[parent_key]['@attr']['totalPages']):
+                    break
 
-            if page == int(
-                content.get('taggings', content)[parent_key]['@attr'][
-                    'totalPages'
-                ]
-            ):
-                break
             if num_pages and page == num_pages:
                 break
 

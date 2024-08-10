@@ -80,7 +80,8 @@ class LastFM:  # noqa PLR0904
         )
         response_list = []
         for data in responses:
-            response_list.extend(data.json()[parent_key][list_key])
+            data = data.json()
+            response_list.extend(data.get('taggings', data)[parent_key][list_key])
         return response_list
 
     def get_search_data(
@@ -169,7 +170,10 @@ class LastFM:  # noqa PLR0904
             'mbid': mbid,
             'autocorrect': autocorrect,
         }
-        return self.request_controller.request(payload).json()['tags']['tag']
+        response = self.request_controller.request(payload).json()['tags']
+        if 'tag' in response:
+            return response['tag']
+        else: return []
 
     def get_album_top_tags(  # noqa PLR0917
         self,
@@ -191,7 +195,8 @@ class LastFM:  # noqa PLR0904
             'mbid': mbid,
             'autocorrect': autocorrect,
         }
-        return self.request_controller.request(payload).json()['tags']['tag']
+        
+        return self.request_controller.request(payload).json()['toptags']['tag']
 
     def search_album(self, album: str, amount: int = None) -> list[dict]:
         payload = {'method': ALBUM_SEARCH, 'album': album}
@@ -242,8 +247,11 @@ class LastFM:  # noqa PLR0904
             'mbid': mbid,
             'autocorrect': autocorrect,
         }
-        return self.request_controller.request(payload).json()['tags']['tag']
-
+        response = self.request_controller.request(payload).json()['tags']
+        if 'tag' in response:
+            return response['tag']
+        else: return []
+    
     def get_artist_top_tags(
         self, artist: str = None, mbid: str = None, autocorrect: int = 0
     ) -> list[dict]:
@@ -306,7 +314,7 @@ class LastFM:  # noqa PLR0904
         artist: str = None,
         mbid: str = None,
         autocorrect: int = 0,
-        limit: int = 30,
+        amount: int = 30,
     ) -> dict:
         if not artist and not mbid:
             raise LastFMException(
@@ -318,7 +326,7 @@ class LastFM:  # noqa PLR0904
             'artist': artist,
             'mbid': mbid,
             'autocorrect': autocorrect,
-            'limit': limit,
+            'limit': amount,
         }
         return self.request_controller.request(payload).json()[
             'similarartists'
@@ -386,8 +394,11 @@ class LastFM:  # noqa PLR0904
             'mbid': mbid,
             'autocorrect': autocorrect,
         }
-        return self.request_controller.request(payload).json()['tags']['tag']
-
+        response = self.request_controller.request(payload).json()['tags']
+        if 'tag' in response:
+            return response['tag']
+        else: return []
+    
     def get_track_top_tags(
         self,
         track: str = None,
@@ -418,7 +429,7 @@ class LastFM:  # noqa PLR0904
         artist: str = None,
         mbid: str = None,
         autocorrect: int = 0,
-        limit: int = 100,
+        amount: int = 100,
     ) -> dict:
         if not (artist and track) and not mbid:
             raise LastFMException(
@@ -432,7 +443,7 @@ class LastFM:  # noqa PLR0904
             'artist': artist,
             'mbid': mbid,
             'autocorrect': autocorrect,
-            'limit': limit,
+            'limit': amount,
         }
         return self.request_controller.request(payload).json()[
             'similartracks'
@@ -466,7 +477,7 @@ class LastFM:  # noqa PLR0904
             'user': user,
             'recenttracks': recenttracks,
         }
-        return self.get_paginated_data(payload, 'friends', 'friend', amount)
+        return self.get_paginated_data(payload, 'friends', 'user', amount)
 
     def get_user_info(self, user: str) -> dict:
         payload = {'method': USER_GETINFO, 'user': user}
@@ -546,8 +557,11 @@ class LastFM:  # noqa PLR0904
         payload = {
             'method': USER_GETTOPTAGS,
             'user': user,
+            'limit': amount
         }
-        return self.get_paginated_data(payload, 'toptags', 'tag', amount)
+        return self.request_controller.request(payload).json()['toptags'][
+            'tag'
+        ]
 
     def get_user_weekly_album_chart(
         self,

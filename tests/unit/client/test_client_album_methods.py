@@ -289,7 +289,7 @@ def test_get_album_tags_with_parameters(mocker):
 def test_get_album_top_tags(mocker):
     album = 'albumname'
     artist = 'artistname'
-    return_value = {'tags': {'tag': {'name': 'Tag Name'}}}
+    return_value = {'toptags': {'tag': {'name': 'Tag Name'}}}
 
     MockRequestController = mocker.patch(
         'pylastfm.client.RequestController', autospec=True
@@ -310,7 +310,7 @@ def test_get_album_top_tags(mocker):
         'mbid': None,
         'autocorrect': 0,
     })
-    assert response == return_value['tags']['tag']
+    assert response == return_value['toptags']['tag']
 
 
 def test_get_album_top_tags_without_artist_name(mocker):
@@ -351,7 +351,7 @@ def test_get_album_top_tags_without_album_artist_and_mbid(mocker):
 def test_get_album_top_tags_without_album_name_with_mbid(mocker):
     artist = 'artistname'
     mbid = 'mbidtest'
-    return_value = {'tags': {'tag': {'name': 'Tag Name'}}}
+    return_value = {'toptags': {'tag': {'name': 'Tag Name'}}}
 
     MockRequestController = mocker.patch(
         'pylastfm.client.RequestController', autospec=True
@@ -372,14 +372,14 @@ def test_get_album_top_tags_without_album_name_with_mbid(mocker):
         'mbid': mbid,
         'autocorrect': 0,
     })
-    assert response == return_value['tags']['tag']
+    assert response == return_value['toptags']['tag']
 
 
 def test_get_album_top_tags_with_parameters(mocker):
     album = 'albumname'
     artist = 'artistname'
     autocorrect = 1
-    return_value = {'tags': {'tag': {'name': 'Tag Name'}}}
+    return_value = {'toptags': {'tag': {'name': 'Tag Name'}}}
 
     MockRequestController = mocker.patch(
         'pylastfm.client.RequestController', autospec=True
@@ -404,7 +404,7 @@ def test_get_album_top_tags_with_parameters(mocker):
         'mbid': None,
         'autocorrect': autocorrect,
     })
-    assert response == return_value['tags']['tag']
+    assert response == return_value['toptags']['tag']
 
 
 # #########################################################################

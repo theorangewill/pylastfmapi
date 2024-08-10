@@ -383,8 +383,8 @@ def test_request_all_pages_with_tagging(mocker):
             'taggings': {
                 'parent': {
                     'list': [2] * LIMIT,
-                    '@attr': {'totalPages': total_pages},
-                }
+                },
+                '@attr': {'totalPages': total_pages},
             }
         }
         mock_responses.append(mock_response)
