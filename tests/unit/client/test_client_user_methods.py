@@ -26,20 +26,15 @@ from pylastfm.exceptions import LastFMException
 # #########################################################################
 
 
-def test_get_user_friends(mocker):
+def test_get_user_friends(setup_paginated_mock):
     user = 'username'
     return_value = [{'name': 'friend Name'}, {'name': 'friend Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_user_friends(user=user)
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': USER_GETFRIENDS,
             'user': user,
@@ -52,24 +47,19 @@ def test_get_user_friends(mocker):
     assert response == return_value
 
 
-def test_get_user_friends_with_parameters(mocker):
+def test_get_user_friends_with_parameters(setup_paginated_mock):
     user = 'username'
     recenttracks = True
     amount = 10
     return_value = [{'name': 'friend Name'}, {'name': 'friend Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_user_friends(
         user=user, recenttracks=recenttracks, amount=amount
     )
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': USER_GETFRIENDS,
             'user': user,
@@ -87,19 +77,11 @@ def test_get_user_friends_with_parameters(mocker):
 #########################################################################
 
 
-def test_get_user_info(mocker):
+def test_get_user_info(setup_request_mock):
     user = 'username'
     return_value = {'user': {'name': 'User Name'}}
 
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_request_mock(return_value)
     ##
     response = client.get_user_info(user=user)
     ##
@@ -115,20 +97,15 @@ def test_get_user_info(mocker):
 # #########################################################################
 
 
-def test_get_user_loved_tracks(mocker):
+def test_get_user_loved_tracks(setup_paginated_mock):
     user = 'username'
     return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_user_loved_tracks(user=user)
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': USER_GETLOVEDTRACKS,
             'user': user,
@@ -140,21 +117,16 @@ def test_get_user_loved_tracks(mocker):
     assert response == return_value
 
 
-def test_get_user_loved_tracks_with_parameters(mocker):
+def test_get_user_loved_tracks_with_parameters(setup_paginated_mock):
     user = 'username'
     amount = 10
     return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_user_loved_tracks(user=user, amount=amount)
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': USER_GETLOVEDTRACKS,
             'user': user,
@@ -171,40 +143,30 @@ def test_get_user_loved_tracks_with_parameters(mocker):
 # #########################################################################
 
 
-def test_get_user_library_artists(mocker):
+def test_get_user_library_artists(setup_paginated_mock):
     user = 'username'
     return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_user_library_artists(user=user)
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {'method': LIBRARY_GETARTISTS, 'user': user}, 'artists', 'artist', None
     )
     assert response == return_value
 
 
-def test_get_user_library_artists_with_parameters(mocker):
+def test_get_user_library_artists_with_parameters(setup_paginated_mock):
     user = 'username'
     amount = 10
     return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_user_library_artists(user=user, amount=amount)
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {'method': LIBRARY_GETARTISTS, 'user': user},
         'artists',
         'artist',
@@ -218,24 +180,19 @@ def test_get_user_library_artists_with_parameters(mocker):
 # #########################################################################
 
 
-def test_get_user_personal_tags_type_artist(mocker):
+def test_get_user_personal_tags_type_artist(setup_paginated_mock):
     user = 'username'
     tag = 'tagname'
     taggingtype = 'artist'
     return_value = [{'name': 'Artist Name'}, {'name': 'Artist Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_user_personal_tags(
         user=user, tag=tag, taggingtype=taggingtype
     )
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': USER_GETPERSONALTAGS,
             'user': user,
@@ -249,25 +206,22 @@ def test_get_user_personal_tags_type_artist(mocker):
     assert response == return_value
 
 
-def test_get_user_personal_tags_type_artist_with_parameters(mocker):
+def test_get_user_personal_tags_type_artist_with_parameters(
+    setup_paginated_mock,
+):
     user = 'username'
     tag = 'tagname'
     taggingtype = 'artist'
     amount = 10
     return_value = [{'name': 'Artist Name'}, {'name': 'Artist Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_user_personal_tags(
         user=user, tag=tag, taggingtype=taggingtype, amount=amount
     )
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': USER_GETPERSONALTAGS,
             'user': user,
@@ -281,24 +235,19 @@ def test_get_user_personal_tags_type_artist_with_parameters(mocker):
     assert response == return_value
 
 
-def test_get_user_personal_tags_type_album(mocker):
+def test_get_user_personal_tags_type_album(setup_paginated_mock):
     user = 'username'
     tag = 'tagname'
     taggingtype = 'album'
     return_value = [{'name': 'Album Name'}, {'name': 'Album Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_user_personal_tags(
         user=user, tag=tag, taggingtype=taggingtype
     )
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': USER_GETPERSONALTAGS,
             'user': user,
@@ -312,25 +261,22 @@ def test_get_user_personal_tags_type_album(mocker):
     assert response == return_value
 
 
-def test_get_user_personal_tags_type_album_with_parameters(mocker):
+def test_get_user_personal_tags_type_album_with_parameters(
+    setup_paginated_mock,
+):
     user = 'username'
     tag = 'tagname'
     taggingtype = 'album'
     amount = 10
     return_value = [{'name': 'Album Name'}, {'name': 'Album Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_user_personal_tags(
         user=user, tag=tag, taggingtype=taggingtype, amount=amount
     )
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': USER_GETPERSONALTAGS,
             'user': user,
@@ -344,24 +290,19 @@ def test_get_user_personal_tags_type_album_with_parameters(mocker):
     assert response == return_value
 
 
-def test_get_user_personal_tags_type_track(mocker):
+def test_get_user_personal_tags_type_track(setup_paginated_mock):
     user = 'username'
     tag = 'tagname'
     taggingtype = 'track'
     return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_user_personal_tags(
         user=user, tag=tag, taggingtype=taggingtype
     )
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': USER_GETPERSONALTAGS,
             'user': user,
@@ -375,25 +316,22 @@ def test_get_user_personal_tags_type_track(mocker):
     assert response == return_value
 
 
-def test_get_user_personal_tags_type_track_with_parameters(mocker):
+def test_get_user_personal_tags_type_track_with_parameters(
+    setup_paginated_mock,
+):
     user = 'username'
     tag = 'tagname'
     taggingtype = 'track'
     amount = 10
     return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_user_personal_tags(
         user=user, tag=tag, taggingtype=taggingtype, amount=amount
     )
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': USER_GETPERSONALTAGS,
             'user': user,
@@ -412,20 +350,15 @@ def test_get_user_personal_tags_type_track_with_parameters(mocker):
 # #########################################################################
 
 
-def test_get_user_top_albums(mocker):
+def test_get_user_top_albums(setup_paginated_mock):
     user = 'username'
     return_value = [{'name': 'Album Name'}, {'name': 'Album Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_user_top_albums(user=user)
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': USER_GETTOPALBUMS,
             'user': user,
@@ -438,24 +371,19 @@ def test_get_user_top_albums(mocker):
     assert response == return_value
 
 
-def test_get_user_top_albums_with_parameters(mocker):
+def test_get_user_top_albums_with_parameters(setup_paginated_mock):
     user = 'username'
     period = '7day'
     amount = 10
     return_value = [{'name': 'Album Name'}, {'name': 'Album Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_user_top_albums(
         user=user, period=period, amount=amount
     )
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': USER_GETTOPALBUMS,
             'user': user,
@@ -473,20 +401,15 @@ def test_get_user_top_albums_with_parameters(mocker):
 # #########################################################################
 
 
-def test_get_user_top_artists(mocker):
+def test_get_user_top_artists(setup_paginated_mock):
     user = 'username'
     return_value = [{'name': 'Album Name'}, {'name': 'Album Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_user_top_artists(user=user)
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': USER_GETTOPARTISTS,
             'user': user,
@@ -499,24 +422,19 @@ def test_get_user_top_artists(mocker):
     assert response == return_value
 
 
-def test_get_user_top_artists_with_parameters(mocker):
+def test_get_user_top_artists_with_parameters(setup_paginated_mock):
     user = 'username'
     period = '7day'
     amount = 10
     return_value = [{'name': 'Album Name'}, {'name': 'Album Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_user_top_artists(
         user=user, period=period, amount=amount
     )
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': USER_GETTOPARTISTS,
             'user': user,
@@ -534,20 +452,15 @@ def test_get_user_top_artists_with_parameters(mocker):
 # #########################################################################
 
 
-def test_get_user_top_tracks(mocker):
+def test_get_user_top_tracks(setup_paginated_mock):
     user = 'username'
     return_value = [{'name': 'Album Name'}, {'name': 'Album Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_user_top_tracks(user=user)
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': USER_GETTOPTRACKS,
             'user': user,
@@ -560,24 +473,19 @@ def test_get_user_top_tracks(mocker):
     assert response == return_value
 
 
-def test_get_user_top_tracks_with_parameters(mocker):
+def test_get_user_top_tracks_with_parameters(setup_paginated_mock):
     user = 'username'
     period = '7day'
     amount = 10
     return_value = [{'name': 'Album Name'}, {'name': 'Album Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_user_top_tracks(
         user=user, period=period, amount=amount
     )
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': USER_GETTOPTRACKS,
             'user': user,
@@ -595,52 +503,39 @@ def test_get_user_top_tracks_with_parameters(mocker):
 # #########################################################################
 
 
-def test_get_user_top_tags(mocker):
+def test_get_user_top_tags(setup_request_mock):
     user = 'username'
-    return_value = {'toptags': {'tag': [{'name': 'Album Name'}, {'name': 'Album Name'}]}}
+    return_value = {
+        'toptags': {'tag': [{'name': 'Album Name'}, {'name': 'Album Name'}]}
+    }
 
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_request_mock(return_value)
     ##
     response = client.get_user_top_tags(user=user)
     ##
     mock_request_controller.request.assert_called_with({
         'method': USER_GETTOPTAGS,
         'user': user,
-        'limit': None
+        'limit': None,
     })
     assert response == return_value['toptags']['tag']
 
 
-
-def test_get_user_top_tags_with_parameters(mocker):
+def test_get_user_top_tags_with_parameters(setup_request_mock):
     user = 'username'
     amount = 10
-    return_value = {'toptags': {'tag': [{'name': 'Album Name'}, {'name': 'Album Name'}]}}
+    return_value = {
+        'toptags': {'tag': [{'name': 'Album Name'}, {'name': 'Album Name'}]}
+    }
 
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_request_mock(return_value)
     ##
     response = client.get_user_top_tags(user=user, amount=amount)
     ##
     mock_request_controller.request.assert_called_with({
         'method': USER_GETTOPTAGS,
         'user': user,
-        'limit': amount
+        'limit': amount,
     })
     assert response == return_value['toptags']['tag']
 
@@ -650,7 +545,7 @@ def test_get_user_top_tags_with_parameters(mocker):
 #########################################################################
 
 
-def test_get_user_weekly_album_chart(mocker):
+def test_get_user_weekly_album_chart(setup_request_mock):
     user = 'username'
     return_value = {
         'weeklyalbumchart': {
@@ -658,15 +553,7 @@ def test_get_user_weekly_album_chart(mocker):
         }
     }
 
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_request_mock(return_value)
     ##
     response = client.get_user_weekly_album_chart(user=user)
     ##
@@ -680,7 +567,9 @@ def test_get_user_weekly_album_chart(mocker):
     assert response == return_value['weeklyalbumchart']['album']
 
 
-def test_get_user_weekly_album_chart_with_parameters(mocker):
+def test_get_user_weekly_album_chart_with_parameters(
+    mocker, setup_request_mock
+):
     user = 'username'
     amount = 10
     date_from = '2024-08-02'
@@ -690,16 +579,15 @@ def test_get_user_weekly_album_chart_with_parameters(mocker):
             'album': [{'name': 'Album Name'}, {'name': 'Album Name'}]
         }
     }
-
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
+    mocker.patch(
+        'pylastfm.utils.get_timestamp',
+        return_value=[
+            int(datetime.strptime(date_from, '%Y-%m-%d').timestamp()),
+            int(datetime.strptime(date_to, '%Y-%m-%d').timestamp()),
+        ],
     )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
 
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_request_mock(return_value)
     ##
     response = client.get_user_weekly_album_chart(
         user=user, amount=amount, date_from=date_from, date_to=date_to
@@ -728,148 +616,12 @@ def test_get_user_weekly_album_chart_with_amount_higher_than_maximum(mocker):
         _ = client.get_user_weekly_album_chart(user=user, amount=amount)
 
 
-def test_get_user_weekly_album_chart_with_wrong_date_from_date_to(mocker):
-    user = 'username'
-    date_from = '2023-40-10'
-    date_to = '2023-40-11'
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='The params "date_from" and "date_to" should be a valid date'
-        ' and in "YYYY-MM-DD" or "YYYY-MM-DD %H:%M" format: time data '
-        "'2023-40-10' does not match format '%Y-%m-%d'",
-    ):
-        _ = client.get_user_weekly_album_chart(
-            user=user, date_from=date_from, date_to=date_to
-        )
-
-
-def test_get_user_weekly_album_chart_with_wrong_date_from_without_date_to(
-    mocker,
-):
-    user = 'username'
-    date_from = '2023-04-10'
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='The params "date_from" and "date_to" should be given together',
-    ):
-        _ = client.get_user_weekly_album_chart(user=user, date_from=date_from)
-
-
-def test_get_user_weekly_album_chart_with_wrong_date_to_without_date_from(
-    mocker,
-):
-    user = 'username'
-    date_to = '2023-04-10'
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='The params "date_from" and "date_to" should be given together',
-    ):
-        _ = client.get_user_weekly_album_chart(user=user, date_to=date_to)
-
-
-def test_get_user_weekly_album_chart_with_date_from_higher_than_date_to(
-    mocker,
-):
-    user = 'username'
-    date_from = '2023-05-10'
-    date_to = '2023-04-10'
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='The params "date_from" should be lower than "date_to"',
-    ):
-        _ = client.get_user_weekly_album_chart(
-            user=user, date_from=date_from, date_to=date_to
-        )
-
-
-def test_get_user_weekly_album_chart_date_from_format_with_hour(mocker):
-    user = 'username'
-    date_from = '2023-03-10 10:10'
-    date_to = '2024-08-07'
-    return_value = {
-        'weeklyalbumchart': {
-            'album': [{'name': 'Album Name'}, {'name': 'Album Name'}]
-        }
-    }
-
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    response = client.get_user_weekly_album_chart(
-        user=user, date_from=date_from, date_to=date_to
-    )
-    ##
-    mock_request_controller.request.assert_called_with({
-        'method': USER_GETWEEKLYALBUMCHART,
-        'user': user,
-        'limit': None,
-        'from': int(
-            datetime.strptime(date_from, '%Y-%m-%d %H:%M').timestamp()
-        ),
-        'to': int(datetime.strptime(date_to, '%Y-%m-%d').timestamp()),
-    })
-    assert response == return_value['weeklyalbumchart']['album']
-
-
-def test_get_user_weekly_album_chart_date_to_format_with_hour(mocker):
-    user = 'username'
-    date_from = '2023-03-10'
-    date_to = '2024-08-07 10:10'
-    return_value = {
-        'weeklyalbumchart': {
-            'album': [{'name': 'Album Name'}, {'name': 'Album Name'}]
-        }
-    }
-
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    response = client.get_user_weekly_album_chart(
-        user=user, date_from=date_from, date_to=date_to
-    )
-    ##
-    mock_request_controller.request.assert_called_with({
-        'method': USER_GETWEEKLYALBUMCHART,
-        'user': user,
-        'limit': None,
-        'from': int(datetime.strptime(date_from, '%Y-%m-%d').timestamp()),
-        'to': int(datetime.strptime(date_to, '%Y-%m-%d %H:%M').timestamp()),
-    })
-    assert response == return_value['weeklyalbumchart']['album']
-
-
 #########################################################################
 # GET USER WEEKLY ARTIST CHART
 #########################################################################
 
 
-def test_get_user_weekly_artist_chart(mocker):
+def test_get_user_weekly_artist_chart(setup_request_mock):
     user = 'username'
     return_value = {
         'weeklyartistchart': {
@@ -877,15 +629,7 @@ def test_get_user_weekly_artist_chart(mocker):
         }
     }
 
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_request_mock(return_value)
     ##
     response = client.get_user_weekly_artist_chart(user=user)
     ##
@@ -899,7 +643,9 @@ def test_get_user_weekly_artist_chart(mocker):
     assert response == return_value['weeklyartistchart']['artist']
 
 
-def test_get_user_weekly_artist_chart_with_parameters(mocker):
+def test_get_user_weekly_artist_chart_with_parameters(
+    mocker, setup_request_mock
+):
     user = 'username'
     amount = 10
     date_from = '2024-08-02'
@@ -909,16 +655,15 @@ def test_get_user_weekly_artist_chart_with_parameters(mocker):
             'artist': [{'name': 'Artist Name'}, {'name': 'Artist Name'}]
         }
     }
-
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
+    mocker.patch(
+        'pylastfm.utils.get_timestamp',
+        return_value=[
+            int(datetime.strptime(date_from, '%Y-%m-%d').timestamp()),
+            int(datetime.strptime(date_to, '%Y-%m-%d').timestamp()),
+        ],
     )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
 
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_request_mock(return_value)
     ##
     response = client.get_user_weekly_artist_chart(
         user=user, amount=amount, date_from=date_from, date_to=date_to
@@ -947,148 +692,12 @@ def test_get_user_weekly_artist_chart_with_amount_higher_than_maximum(mocker):
         _ = client.get_user_weekly_artist_chart(user=user, amount=amount)
 
 
-def test_get_user_weekly_artist_chart_with_wrong_date_from_date_to(mocker):
-    user = 'username'
-    date_from = '2023-40-10'
-    date_to = '2023-40-11'
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='The params "date_from" and "date_to" should be a valid date'
-        ' and in "YYYY-MM-DD" or "YYYY-MM-DD %H:%M" format: time data '
-        "'2023-40-10' does not match format '%Y-%m-%d'",
-    ):
-        _ = client.get_user_weekly_artist_chart(
-            user=user, date_from=date_from, date_to=date_to
-        )
-
-
-def test_get_user_weekly_artist_chart_with_wrong_date_from_without_date_to(
-    mocker,
-):
-    user = 'username'
-    date_from = '2023-04-10'
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='The params "date_from" and "date_to" should be given together',
-    ):
-        _ = client.get_user_weekly_artist_chart(user=user, date_from=date_from)
-
-
-def test_get_user_weekly_artist_chart_with_wrong_date_to_without_date_from(
-    mocker,
-):
-    user = 'username'
-    date_to = '2023-04-10'
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='The params "date_from" and "date_to" should be given together',
-    ):
-        _ = client.get_user_weekly_artist_chart(user=user, date_to=date_to)
-
-
-def test_get_user_weekly_artist_chart_with_date_from_higher_than_date_to(
-    mocker,
-):
-    user = 'username'
-    date_from = '2023-05-10'
-    date_to = '2023-04-10'
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='The params "date_from" should be lower than "date_to"',
-    ):
-        _ = client.get_user_weekly_artist_chart(
-            user=user, date_from=date_from, date_to=date_to
-        )
-
-
-def test_get_user_weekly_artist_chart_date_from_format_with_hour(mocker):
-    user = 'username'
-    date_from = '2023-03-10 10:10'
-    date_to = '2024-08-07'
-    return_value = {
-        'weeklyartistchart': {
-            'artist': [{'name': 'Artist Name'}, {'name': 'Artist Name'}]
-        }
-    }
-
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    response = client.get_user_weekly_artist_chart(
-        user=user, date_from=date_from, date_to=date_to
-    )
-    ##
-    mock_request_controller.request.assert_called_with({
-        'method': USER_GETWEEKLYARTISTCHART,
-        'user': user,
-        'limit': None,
-        'from': int(
-            datetime.strptime(date_from, '%Y-%m-%d %H:%M').timestamp()
-        ),
-        'to': int(datetime.strptime(date_to, '%Y-%m-%d').timestamp()),
-    })
-    assert response == return_value['weeklyartistchart']['artist']
-
-
-def test_get_user_weekly_artist_chart_date_to_format_with_hour(mocker):
-    user = 'username'
-    date_from = '2023-03-10'
-    date_to = '2024-08-07 10:10'
-    return_value = {
-        'weeklyartistchart': {
-            'artist': [{'name': 'Artist Name'}, {'name': 'Artist Name'}]
-        }
-    }
-
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    response = client.get_user_weekly_artist_chart(
-        user=user, date_from=date_from, date_to=date_to
-    )
-    ##
-    mock_request_controller.request.assert_called_with({
-        'method': USER_GETWEEKLYARTISTCHART,
-        'user': user,
-        'limit': None,
-        'from': int(datetime.strptime(date_from, '%Y-%m-%d').timestamp()),
-        'to': int(datetime.strptime(date_to, '%Y-%m-%d %H:%M').timestamp()),
-    })
-    assert response == return_value['weeklyartistchart']['artist']
-
-
 #########################################################################
 # GET USER WEEKLY TRACK CHART
 #########################################################################
 
 
-def test_get_user_weekly_track_chart(mocker):
+def test_get_user_weekly_track_chart(setup_request_mock):
     user = 'username'
     return_value = {
         'weeklytrackchart': {
@@ -1096,15 +705,7 @@ def test_get_user_weekly_track_chart(mocker):
         }
     }
 
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_request_mock(return_value)
     ##
     response = client.get_user_weekly_track_chart(user=user)
     ##
@@ -1118,7 +719,9 @@ def test_get_user_weekly_track_chart(mocker):
     assert response == return_value['weeklytrackchart']['track']
 
 
-def test_get_user_weekly_track_chart_with_parameters(mocker):
+def test_get_user_weekly_track_chart_with_parameters(
+    mocker, setup_request_mock
+):
     user = 'username'
     amount = 10
     date_from = '2024-08-02'
@@ -1128,16 +731,15 @@ def test_get_user_weekly_track_chart_with_parameters(mocker):
             'track': [{'name': 'Track Name'}, {'name': 'Track Name'}]
         }
     }
-
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
+    mocker.patch(
+        'pylastfm.utils.get_timestamp',
+        return_value=[
+            int(datetime.strptime(date_from, '%Y-%m-%d').timestamp()),
+            int(datetime.strptime(date_to, '%Y-%m-%d').timestamp()),
+        ],
     )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
 
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_request_mock(return_value)
     ##
     response = client.get_user_weekly_track_chart(
         user=user, amount=amount, date_from=date_from, date_to=date_to
@@ -1166,161 +768,20 @@ def test_get_user_weekly_track_chart_with_amount_higher_than_maximum(mocker):
         _ = client.get_user_weekly_track_chart(user=user, amount=amount)
 
 
-def test_get_user_weekly_track_chart_with_wrong_date_from_date_to(mocker):
-    user = 'username'
-    date_from = '2023-40-10'
-    date_to = '2023-40-11'
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='The params "date_from" and "date_to" should be a valid date'
-        ' and in "YYYY-MM-DD" or "YYYY-MM-DD %H:%M" format: time data '
-        "'2023-40-10' does not match format '%Y-%m-%d'",
-    ):
-        _ = client.get_user_weekly_track_chart(
-            user=user, date_from=date_from, date_to=date_to
-        )
-
-
-def test_get_user_weekly_track_chart_with_wrong_date_from_without_date_to(
-    mocker,
-):
-    user = 'username'
-    date_from = '2023-04-10'
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='The params "date_from" and "date_to" should be given together',
-    ):
-        _ = client.get_user_weekly_track_chart(user=user, date_from=date_from)
-
-
-def test_get_user_weekly_track_chart_with_wrong_date_to_without_date_from(
-    mocker,
-):
-    user = 'username'
-    date_to = '2023-04-10'
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='The params "date_from" and "date_to" should be given together',
-    ):
-        _ = client.get_user_weekly_track_chart(user=user, date_to=date_to)
-
-
-def test_get_user_weekly_track_chart_with_date_from_higher_than_date_to(
-    mocker,
-):
-    user = 'username'
-    date_from = '2023-05-10'
-    date_to = '2023-04-10'
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='The params "date_from" should be lower than "date_to"',
-    ):
-        _ = client.get_user_weekly_track_chart(
-            user=user, date_from=date_from, date_to=date_to
-        )
-
-
-def test_get_user_weekly_track_chart_date_from_format_with_hour(mocker):
-    user = 'username'
-    date_from = '2023-03-10 10:10'
-    date_to = '2023-04-10'
-    return_value = {
-        'weeklytrackchart': {
-            'track': [{'name': 'Track Name'}, {'name': 'Track Name'}]
-        }
-    }
-
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    response = client.get_user_weekly_track_chart(
-        user=user, date_from=date_from, date_to=date_to
-    )
-    ##
-    mock_request_controller.request.assert_called_with({
-        'method': USER_GETWEEKLYTRACKCHART,
-        'user': user,
-        'limit': None,
-        'from': int(
-            datetime.strptime(date_from, '%Y-%m-%d %H:%M').timestamp()
-        ),
-        'to': int(datetime.strptime(date_to, '%Y-%m-%d').timestamp()),
-    })
-    assert response == return_value['weeklytrackchart']['track']
-
-
-def test_get_user_weekly_track_chart_date_to_format_with_hour(mocker):
-    user = 'username'
-    date_from = '2023-03-10'
-    date_to = '2023-04-10 10:10'
-    return_value = {
-        'weeklytrackchart': {
-            'track': [{'name': 'Track Name'}, {'name': 'Track Name'}]
-        }
-    }
-
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    response = client.get_user_weekly_track_chart(
-        user=user, date_from=date_from, date_to=date_to
-    )
-    ##
-    mock_request_controller.request.assert_called_with({
-        'method': USER_GETWEEKLYTRACKCHART,
-        'user': user,
-        'limit': None,
-        'from': int(datetime.strptime(date_from, '%Y-%m-%d').timestamp()),
-        'to': int(datetime.strptime(date_to, '%Y-%m-%d %H:%M').timestamp()),
-    })
-    assert response == return_value['weeklytrackchart']['track']
-
-
 #########################################################################
 # GET USER RECENT TRACKS
 #########################################################################
 
 
-def test_get_user_recent_tracks(mocker):
+def test_get_user_recent_tracks(setup_paginated_mock):
     user = 'username'
     return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_user_recent_tracks(user=user)
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': USER_GETRECENTTRACKS,
             'user': user,
@@ -1335,7 +796,7 @@ def test_get_user_recent_tracks(mocker):
     assert response == return_value
 
 
-def test_get_user_recent_tracks_with_parameters(mocker):
+def test_get_user_recent_tracks_with_parameters(mocker, setup_paginated_mock):
     user = 'username'
     date_from = '2023-04-10'
     date_to = '2023-04-12'
@@ -1343,12 +804,14 @@ def test_get_user_recent_tracks_with_parameters(mocker):
     amount = 10
     return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
+    mocker.patch(
+        'pylastfm.utils.get_timestamp',
+        return_value=[
+            int(datetime.strptime(date_from, '%Y-%m-%d').timestamp()),
+            int(datetime.strptime(date_to, '%Y-%m-%d').timestamp()),
+        ],
     )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_user_recent_tracks(
         user=user,
@@ -1358,152 +821,12 @@ def test_get_user_recent_tracks_with_parameters(mocker):
         extended=extended,
     )
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': USER_GETRECENTTRACKS,
             'user': user,
             'from': int(datetime.strptime(date_from, '%Y-%m-%d').timestamp()),
             'to': int(datetime.strptime(date_to, '%Y-%m-%d').timestamp()),
-            'extended': extended,
-        },
-        'recenttracks',
-        'track',
-        amount,
-    )
-    assert response == return_value
-
-
-def test_get_user_recent_tracks_with_wrong_date_from_date_to(mocker):
-    user = 'username'
-    date_from = '2023-40-10'
-    date_to = '2023-40-11'
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='The params "date_from" and "date_to" should be a valid date'
-        ' and in "YYYY-MM-DD" or "YYYY-MM-DD %H:%M" format: time data '
-        "'2023-40-10' does not match format '%Y-%m-%d'",
-    ):
-        _ = client.get_user_recent_tracks(
-            user=user, date_from=date_from, date_to=date_to
-        )
-
-
-def test_get_user_recent_tracks_with_wrong_date_from_without_date_to(mocker):
-    user = 'username'
-    date_from = '2023-04-10'
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='The params "date_from" and "date_to" should be given together',
-    ):
-        _ = client.get_user_recent_tracks(user=user, date_from=date_from)
-
-
-def test_get_user_recent_tracks_with_wrong_date_to_without_date_from(mocker):
-    user = 'username'
-    date_to = '2023-04-10'
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='The params "date_from" and "date_to" should be given together',
-    ):
-        _ = client.get_user_recent_tracks(user=user, date_to=date_to)
-
-
-def test_get_user_recent_tracks_with_date_from_higher_than_date_to(mocker):
-    user = 'username'
-    date_from = '2023-05-10'
-    date_to = '2023-04-10'
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='The params "date_from" should be lower than "date_to"',
-    ):
-        _ = client.get_user_recent_tracks(
-            user=user, date_from=date_from, date_to=date_to
-        )
-
-
-def test_get_user_recent_tracks_date_from_format_with_hour(mocker):
-    user = 'username'
-    date_from = '2023-04-10 10:10'
-    date_to = '2023-04-12'
-    extended = True
-    amount = 10
-    return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
-
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    response = client.get_user_recent_tracks(
-        user=user,
-        amount=amount,
-        date_from=date_from,
-        date_to=date_to,
-        extended=extended,
-    )
-    ##
-    mock_get_paginated_data.assert_called_with(
-        {
-            'method': USER_GETRECENTTRACKS,
-            'user': user,
-            'from': int(
-                datetime.strptime(date_from, '%Y-%m-%d %H:%M').timestamp()
-            ),
-            'to': int(datetime.strptime(date_to, '%Y-%m-%d').timestamp()),
-            'extended': extended,
-        },
-        'recenttracks',
-        'track',
-        amount,
-    )
-    assert response == return_value
-
-
-def test_get_user_recent_tracks_date_to_format_with_hour(mocker):
-    user = 'username'
-    date_from = '2023-04-10'
-    date_to = '2023-04-12 10:10'
-    extended = True
-    amount = 10
-    return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
-
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    response = client.get_user_recent_tracks(
-        user=user,
-        amount=amount,
-        date_from=date_from,
-        date_to=date_to,
-        extended=extended,
-    )
-    ##
-    mock_get_paginated_data.assert_called_with(
-        {
-            'method': USER_GETRECENTTRACKS,
-            'user': user,
-            'from': int(datetime.strptime(date_from, '%Y-%m-%d').timestamp()),
-            'to': int(
-                datetime.strptime(date_to, '%Y-%m-%d %H:%M').timestamp()
-            ),
             'extended': extended,
         },
         'recenttracks',

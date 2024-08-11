@@ -1,4 +1,3 @@
-from pylastfm.client import LastFM
 from pylastfm.constants import (
     TAG_GETINFO,
     TAG_GETSIMILAR,
@@ -12,19 +11,11 @@ from pylastfm.constants import (
 #########################################################################
 
 
-def test_get_tag_info(mocker):
+def test_get_tag_info(setup_request_mock):
     tag = 'tagname'
     return_value = {'tag': {'name': 'Tag Name'}}
 
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_request_mock(return_value)
     ##
     response = client.get_tag_info(tag=tag)
     ##
@@ -36,20 +27,12 @@ def test_get_tag_info(mocker):
     assert response == return_value['tag']
 
 
-def test_get_tag_info_with_parameters(mocker):
+def test_get_tag_info_with_parameters(setup_request_mock):
     tag = 'tagname'
     lang = 'pt'
     return_value = {'tag': {'name': 'Tag Name'}}
 
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_request_mock(return_value)
     ##
     response = client.get_tag_info(
         tag=tag,
@@ -69,19 +52,11 @@ def test_get_tag_info_with_parameters(mocker):
 # #########################################################################
 
 
-def test_get_tag_similar(mocker):
+def test_get_tag_similar(setup_request_mock):
     tag = 'tagname'
     return_value = {'similartags': {'tag': [{'name': 'Tag Name'}]}}
 
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_request_mock(return_value)
     ##
     response = client.get_tag_similar(tag=tag)
     ##
@@ -97,20 +72,15 @@ def test_get_tag_similar(mocker):
 # #########################################################################
 
 
-def test_get_tag_top_albums(mocker):
+def test_get_tag_top_albums(setup_paginated_mock):
     tag = 'tagname'
     return_value = [{'name': 'Tag Name'}, {'name': 'Tag Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('tag_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_tag_top_albums(tag=tag)
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': TAG_GETTOPALBUMS,
             'tag': tag,
@@ -122,21 +92,16 @@ def test_get_tag_top_albums(mocker):
     assert response == return_value
 
 
-def test_get_tag_top_albums_with_parameters(mocker):
+def test_get_tag_top_albums_with_parameters(setup_paginated_mock):
     tag = 'tagname'
     amount = 10
     return_value = [{'name': 'Tag Name'}, {'name': 'Tag Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('tag_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_tag_top_albums(tag=tag, amount=amount)
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': TAG_GETTOPALBUMS,
             'tag': tag,
@@ -153,20 +118,15 @@ def test_get_tag_top_albums_with_parameters(mocker):
 # #########################################################################
 
 
-def test_get_tag_top_artists(mocker):
+def test_get_tag_top_artists(setup_paginated_mock):
     tag = 'tagname'
     return_value = [{'name': 'Tag Name'}, {'name': 'Tag Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('tag_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_tag_top_artists(tag=tag)
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': TAG_GETTOPARTISTS,
             'tag': tag,
@@ -178,21 +138,16 @@ def test_get_tag_top_artists(mocker):
     assert response == return_value
 
 
-def test_get_tag_top_artists_with_parameters(mocker):
+def test_get_tag_top_artists_with_parameters(setup_paginated_mock):
     tag = 'tagname'
     amount = 10
     return_value = [{'name': 'Tag Name'}, {'name': 'Tag Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('tag_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_tag_top_artists(tag=tag, amount=amount)
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': TAG_GETTOPARTISTS,
             'tag': tag,
@@ -209,20 +164,15 @@ def test_get_tag_top_artists_with_parameters(mocker):
 # #########################################################################
 
 
-def test_get_tag_top_tracks(mocker):
+def test_get_tag_top_tracks(setup_paginated_mock):
     tag = 'tagname'
     return_value = [{'name': 'Tag Name'}, {'name': 'Tag Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('tag_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_tag_top_tracks(tag=tag)
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': TAG_GETTOPTRACKS,
             'tag': tag,
@@ -234,21 +184,16 @@ def test_get_tag_top_tracks(mocker):
     assert response == return_value
 
 
-def test_get_tag_top_tracks_with_parameters(mocker):
+def test_get_tag_top_tracks_with_parameters(setup_paginated_mock):
     tag = 'tagname'
     amount = 10
     return_value = [{'name': 'Tag Name'}, {'name': 'Tag Name'}]
 
-    mock_get_paginated_data = mocker.patch.object(
-        LastFM,
-        'get_paginated_data',
-        return_value=return_value,
-    )
-    client = LastFM('tag_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_paginated_mock(return_value)
     ##
     response = client.get_tag_top_tracks(tag=tag, amount=amount)
     ##
-    mock_get_paginated_data.assert_called_with(
+    mock_request_controller.get_paginated_data.assert_called_with(
         {
             'method': TAG_GETTOPTRACKS,
             'tag': tag,

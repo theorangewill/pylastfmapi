@@ -3,6 +3,7 @@ LIMIT = 500
 LIMIT_SEARCH = 50
 MAX_WEEKLY_CHART = 1000
 
+
 ALBUM_GETINFO = 'album.getInfo'
 ALBUM_GETTAGS = 'album.getTags'
 ALBUM_GETTOPTAGS = 'album.getTopTags'

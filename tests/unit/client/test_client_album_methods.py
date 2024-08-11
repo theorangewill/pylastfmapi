@@ -14,20 +14,11 @@ from pylastfm.exceptions import LastFMException
 #########################################################################
 
 
-def test_get_album_info(mocker):
+def test_get_album_info(setup_request_mock):
     album = 'albumname'
     artist = 'artistname'
     return_value = {'album': {'name': 'Album Name', 'artist': 'Artist Name'}}
-
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_request_mock(return_value)
     ##
     response = client.get_album_info(album=album, artist=artist)
     ##
@@ -36,15 +27,22 @@ def test_get_album_info(mocker):
         'album': album,
         'artist': artist,
         'mbid': None,
-        'autocorrect': 0,
+        'autocorrect': False,
         'lang': 'en',
         'username': None,
     })
     assert response == return_value['album']
 
 
-def test_get_album_info_without_artist_name(mocker):
-    album = 'albumname'
+@pytest.mark.parametrize(
+    ('artist', 'album', 'mbid'),
+    [
+        (None, 'albumname', None),
+        ('artistname', None, None),
+        (None, None, None),
+    ],
+)
+def test_get_album_info_missing_parameters(mocker, artist, album, mbid):
     mocker.patch('pylastfm.client.RequestController')
     client = LastFM('user_agent_test', 'api_key_test')
     ##
@@ -52,46 +50,14 @@ def test_get_album_info_without_artist_name(mocker):
         LastFMException,
         match='You should give the "artist" and "album" or "mbid" for the API',
     ):
-        _ = client.get_album_info(album=album)
+        _ = client.get_album_info(artist=artist, album=album, mbid=mbid)
 
 
-def test_get_album_info_without_album_name(mocker):
-    artist = 'artistname'
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='You should give the "artist" and "album" or "mbid" for the API',
-    ):
-        _ = client.get_album_info(artist=artist)
-
-
-def test_get_album_info_without_album_artist_and_mbid(mocker):
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='You should give the "artist" and "album" or "mbid" for the API',
-    ):
-        _ = client.get_album_info()
-
-
-def test_get_album_info_without_album_name_with_mbid(mocker):
+def test_get_album_info_without_album_name_with_mbid(setup_request_mock):
     artist = 'artistname'
     mbid = 'mbidtest'
     return_value = {'album': {'name': 'Album Name', 'artist': 'Artist Name'}}
-
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_request_mock(return_value)
     ##
     response = client.get_album_info(artist=artist, mbid=mbid)
     ##
@@ -100,30 +66,21 @@ def test_get_album_info_without_album_name_with_mbid(mocker):
         'album': None,
         'artist': artist,
         'mbid': mbid,
-        'autocorrect': 0,
+        'autocorrect': False,
         'lang': 'en',
         'username': None,
     })
     assert response == return_value['album']
 
 
-def test_get_album_info_with_parameters(mocker):
+def test_get_album_info_with_parameters(setup_request_mock):
     album = 'albumname'
     artist = 'artistname'
-    autocorrect = 1
+    autocorrect = True
     lang = 'pt'
     username = 'usertest'
     return_value = {'album': {'name': 'Album Name', 'artist': 'Artist Name'}}
-
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_request_mock(return_value)
     ##
     response = client.get_album_info(
         album=album,
@@ -150,21 +107,12 @@ def test_get_album_info_with_parameters(mocker):
 #########################################################################
 
 
-def test_get_album_tags(mocker):
+def test_get_album_tags(setup_request_mock):
     album = 'albumname'
     artist = 'artistname'
     user = 'usertest'
-    return_value = {'tags': {'tag': {'name': 'Tag Name'}}}
-
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
+    return_value = {'tags': {'tag': [{'name': 'Tag Name'}]}}
+    client, mock_request_controller = setup_request_mock(return_value)
     ##
     response = client.get_album_tags(user=user, album=album, artist=artist)
     ##
@@ -174,13 +122,20 @@ def test_get_album_tags(mocker):
         'album': album,
         'artist': artist,
         'mbid': None,
-        'autocorrect': 0,
+        'autocorrect': False,
     })
     assert response == return_value['tags']['tag']
 
 
-def test_get_album_tags_without_artist_name(mocker):
-    album = 'albumname'
+@pytest.mark.parametrize(
+    ('artist', 'album', 'mbid'),
+    [
+        (None, 'albumname', None),
+        ('artistname', None, None),
+        (None, None, None),
+    ],
+)
+def test_get_album_tags_missing_parameters(mocker, artist, album, mbid):
     user = 'usertest'
     mocker.patch('pylastfm.client.RequestController')
     client = LastFM('user_agent_test', 'api_key_test')
@@ -189,49 +144,17 @@ def test_get_album_tags_without_artist_name(mocker):
         LastFMException,
         match='You should give the "artist" and "album" or "mbid" for the API',
     ):
-        _ = client.get_album_tags(user=user, album=album)
+        _ = client.get_album_tags(
+            user=user, artist=artist, album=album, mbid=mbid
+        )
 
 
-def test_get_album_tags_without_album_name(mocker):
-    artist = 'artistname'
-    user = 'usertest'
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='You should give the "artist" and "album" or "mbid" for the API',
-    ):
-        _ = client.get_album_tags(user=user, artist=artist)
-
-
-def test_get_album_tags_without_album_artist_and_mbid(mocker):
-    user = 'usertest'
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='You should give the "artist" and "album" or "mbid" for the API',
-    ):
-        _ = client.get_album_tags(user=user)
-
-
-def test_get_album_tags_without_album_name_with_mbid(mocker):
+def test_get_album_tags_without_album_name_with_mbid(setup_request_mock):
     artist = 'artistname'
     mbid = 'mbidtest'
     user = 'usertest'
-    return_value = {'tags': {'tag': {'name': 'Tag Name'}}}
-
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
+    return_value = {'tags': {'tag': [{'name': 'Tag Name'}]}}
+    client, mock_request_controller = setup_request_mock(return_value)
     ##
     response = client.get_album_tags(user=user, artist=artist, mbid=mbid)
     ##
@@ -241,27 +164,18 @@ def test_get_album_tags_without_album_name_with_mbid(mocker):
         'album': None,
         'artist': artist,
         'mbid': mbid,
-        'autocorrect': 0,
+        'autocorrect': False,
     })
     assert response == return_value['tags']['tag']
 
 
-def test_get_album_tags_with_parameters(mocker):
+def test_get_album_tags_with_parameters(setup_request_mock):
     album = 'albumname'
     artist = 'artistname'
     user = 'usertest'
-    autocorrect = 1
-    return_value = {'tags': {'tag': {'name': 'Tag Name'}}}
-
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
+    autocorrect = True
+    return_value = {'tags': {'tag': [{'name': 'Tag Name'}]}}
+    client, mock_request_controller = setup_request_mock(return_value)
     ##
     response = client.get_album_tags(
         user=user,
@@ -281,25 +195,36 @@ def test_get_album_tags_with_parameters(mocker):
     assert response == return_value['tags']['tag']
 
 
+def test_get_album_tags_empty_list(setup_request_mock):
+    album = 'albumname'
+    artist = 'artistname'
+    user = 'usertest'
+    return_value = {'tags': []}
+    client, mock_request_controller = setup_request_mock(return_value)
+    ##
+    response = client.get_album_tags(user=user, album=album, artist=artist)
+    ##
+    mock_request_controller.request.assert_called_with({
+        'method': ALBUM_GETTAGS,
+        'user': user,
+        'album': album,
+        'artist': artist,
+        'mbid': None,
+        'autocorrect': False,
+    })
+    assert response == return_value['tags']
+
+
 #########################################################################
 # GET ALBUM TOP TAGS
 #########################################################################
 
 
-def test_get_album_top_tags(mocker):
+def test_get_album_top_tags(setup_request_mock):
     album = 'albumname'
     artist = 'artistname'
     return_value = {'toptags': {'tag': {'name': 'Tag Name'}}}
-
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_request_mock(return_value)
     ##
     response = client.get_album_top_tags(album=album, artist=artist)
     ##
@@ -308,13 +233,20 @@ def test_get_album_top_tags(mocker):
         'album': album,
         'artist': artist,
         'mbid': None,
-        'autocorrect': 0,
+        'autocorrect': False,
     })
     assert response == return_value['toptags']['tag']
 
 
-def test_get_album_top_tags_without_artist_name(mocker):
-    album = 'albumname'
+@pytest.mark.parametrize(
+    ('artist', 'album', 'mbid'),
+    [
+        (None, 'albumname', None),
+        ('artistname', None, None),
+        (None, None, None),
+    ],
+)
+def test_get_album_top_tags_missing_parameters(mocker, artist, album, mbid):
     mocker.patch('pylastfm.client.RequestController')
     client = LastFM('user_agent_test', 'api_key_test')
     ##
@@ -322,46 +254,14 @@ def test_get_album_top_tags_without_artist_name(mocker):
         LastFMException,
         match='You should give the "artist" and "album" or "mbid" for the API',
     ):
-        _ = client.get_album_top_tags(album=album)
+        _ = client.get_album_top_tags(artist=artist, album=album, mbid=mbid)
 
 
-def test_get_album_top_tags_without_album_name(mocker):
-    artist = 'artistname'
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='You should give the "artist" and "album" or "mbid" for the API',
-    ):
-        _ = client.get_album_top_tags(artist=artist)
-
-
-def test_get_album_top_tags_without_album_artist_and_mbid(mocker):
-    mocker.patch('pylastfm.client.RequestController')
-    client = LastFM('user_agent_test', 'api_key_test')
-    ##
-    with pytest.raises(
-        LastFMException,
-        match='You should give the "artist" and "album" or "mbid" for the API',
-    ):
-        _ = client.get_album_top_tags()
-
-
-def test_get_album_top_tags_without_album_name_with_mbid(mocker):
+def test_get_album_top_tags_without_album_name_with_mbid(setup_request_mock):
     artist = 'artistname'
     mbid = 'mbidtest'
     return_value = {'toptags': {'tag': {'name': 'Tag Name'}}}
-
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_request_mock(return_value)
     ##
     response = client.get_album_top_tags(artist=artist, mbid=mbid)
     ##
@@ -370,26 +270,17 @@ def test_get_album_top_tags_without_album_name_with_mbid(mocker):
         'album': None,
         'artist': artist,
         'mbid': mbid,
-        'autocorrect': 0,
+        'autocorrect': False,
     })
     assert response == return_value['toptags']['tag']
 
 
-def test_get_album_top_tags_with_parameters(mocker):
+def test_get_album_top_tags_with_parameters(setup_request_mock):
     album = 'albumname'
     artist = 'artistname'
-    autocorrect = 1
+    autocorrect = True
     return_value = {'toptags': {'tag': {'name': 'Tag Name'}}}
-
-    MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
-    )
-    mock_request_controller = MockRequestController.return_value
-    mock_response = mocker.Mock().return_value
-    mock_response.json.return_value = return_value
-    mock_request_controller.request.return_value = mock_response
-
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_request_mock(return_value)
     ##
     response = client.get_album_top_tags(
         album=album,
@@ -412,20 +303,15 @@ def test_get_album_top_tags_with_parameters(mocker):
 # #########################################################################
 
 
-def test_search_album(mocker):
+def test_search_album(setup_search_mock):
     album = 'albumname'
     return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
 
-    mock_get_search_data = mocker.patch.object(
-        LastFM,
-        'get_search_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_search_mock(return_value)
     ##
     response = client.search_album(album=album)
     ##
-    mock_get_search_data.assert_called_with(
+    mock_request_controller.get_search_data.assert_called_with(
         {
             'method': ALBUM_SEARCH,
             'album': album,
@@ -437,21 +323,16 @@ def test_search_album(mocker):
     assert response == return_value
 
 
-def test_search_album_with_parameters(mocker):
+def test_search_album_with_parameters(setup_search_mock):
     album = 'albumname'
     amount = 10
     return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
 
-    mock_get_search_data = mocker.patch.object(
-        LastFM,
-        'get_search_data',
-        return_value=return_value,
-    )
-    client = LastFM('user_agent_test', 'api_key_test')
+    client, mock_request_controller = setup_search_mock(return_value)
     ##
     response = client.search_album(album=album, amount=amount)
     ##
-    mock_get_search_data.assert_called_with(
+    mock_request_controller.get_search_data.assert_called_with(
         {
             'method': ALBUM_SEARCH,
             'album': album,

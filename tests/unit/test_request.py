@@ -404,6 +404,54 @@ def test_request_all_pages_with_tagging(mocker):
 
 
 ##############################################################################
+# Test get_paginated_data
+##############################################################################
+
+
+def test_get_paginated_data(mocker):
+    user_agent_test = 'user_agent_test'
+    api_key_test = 'api_key_test'
+    amount_responses = 5
+    parent_key = 'parent'
+    list_key = 'list'
+    payload = {'method': 'test'}
+    amount = 10
+
+    mock_response = mocker.Mock().return_value
+    mock_response.json.return_value = {
+        parent_key: {list_key: [{'name': 'item1'}, {'name': 'item2'}]}
+    }
+    mock_responses = [mock_response] * amount_responses
+    mock_request_all_pages = mocker.patch.object(
+        RequestController, 'request_all_pages'
+    )
+    mock_request_all_pages.return_value = mock_responses
+    ###
+    controller = RequestController(user_agent_test, api_key_test)
+    ##
+    response = controller.get_paginated_data(
+        payload, parent_key, list_key, amount
+    )
+    ##
+    mock_request_all_pages.assert_called_once()
+    mock_request_all_pages.assert_called_with(
+        payload, parent_key, list_key, amount
+    )
+    assert response == [
+        {'name': 'item1'},
+        {'name': 'item2'},
+        {'name': 'item1'},
+        {'name': 'item2'},
+        {'name': 'item1'},
+        {'name': 'item2'},
+        {'name': 'item1'},
+        {'name': 'item2'},
+        {'name': 'item1'},
+        {'name': 'item2'},
+    ]
+
+
+##############################################################################
 # Test request_search_pages
 ##############################################################################
 
@@ -697,3 +745,102 @@ def test_clear_cache_(mocker):
     _ = controller.clear_cache()
     ##
     mock_get_cache.assert_called_once()
+
+
+##############################################################################
+# Test get_search_data
+##############################################################################
+
+
+def test_get_search_data(mocker):
+    user_agent_test = 'user_agent_test'
+    api_key_test = 'api_key_test'
+
+    amount_responses = 5
+    payload = {'method': 'test'}
+    parent_key = 'parent'
+    list_key = 'list'
+    amount = 10
+
+    mock_response = mocker.Mock().return_value
+    mock_response.json.return_value = {
+        'results': {
+            parent_key: {list_key: [{'name': 'item1'}, {'name': 'item2'}]}
+        }
+    }
+    mock_responses = [mock_response] * amount_responses
+    mock_request_search_pages = mocker.patch.object(
+        RequestController, 'request_search_pages'
+    )
+    mock_request_search_pages.return_value = mock_responses
+
+    ###
+    controller = RequestController(user_agent_test, api_key_test)
+    ##
+    response = controller.get_search_data(
+        payload, parent_key, list_key, amount
+    )
+    ##
+    mock_request_search_pages.assert_called_once()
+    mock_request_search_pages.assert_called_with(
+        payload, parent_key, list_key, amount
+    )
+    assert response == [
+        {'name': 'item1'},
+        {'name': 'item2'},
+        {'name': 'item1'},
+        {'name': 'item2'},
+        {'name': 'item1'},
+        {'name': 'item2'},
+        {'name': 'item1'},
+        {'name': 'item2'},
+        {'name': 'item1'},
+        {'name': 'item2'},
+    ]
+
+
+def test_get_search_data_amount_not_divisible_by_limit(mocker):
+    mocker.patch('pylastfm.request.LIMIT_SEARCH', 2)
+    user_agent_test = 'user_agent_test'
+    api_key_test = 'api_key_test'
+
+    amount_responses = 5
+    payload = {'method': 'test'}
+    parent_key = 'parent'
+    list_key = 'list'
+    amount = 9
+
+    mock_response = mocker.Mock().return_value
+    mock_response.json.return_value = {
+        'results': {
+            parent_key: {list_key: [{'name': 'item1'}, {'name': 'item2'}]}
+        }
+    }
+    mock_responses = [mock_response] * amount_responses
+    mock_request_search_pages = mocker.patch.object(
+        RequestController, 'request_search_pages'
+    )
+    mock_request_search_pages.return_value = mock_responses
+
+    ###
+    controller = RequestController(user_agent_test, api_key_test)
+    ##
+    response = controller.get_search_data(
+        payload, parent_key, list_key, amount
+    )
+    ##
+    mock_request_search_pages.assert_called_once()
+    mock_request_search_pages.assert_called_with(
+        payload, parent_key, list_key, amount
+    )
+    assert response == [
+        {'name': 'item1'},
+        {'name': 'item2'},
+        {'name': 'item1'},
+        {'name': 'item2'},
+        {'name': 'item1'},
+        {'name': 'item2'},
+        {'name': 'item1'},
+        {'name': 'item2'},
+        {'name': 'item1'},
+    ]
