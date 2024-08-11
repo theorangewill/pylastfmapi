@@ -1,0 +1,35 @@
+site_name: pylastfm
+repo_url: https://github.com/theorangewill/pylastfm
+repo_name: theorangewill/pylastfm
+edit_uri: tree/main/docs
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: deep orange
+      toggle:
+        icon: material/weather-night
+        name: Dark mode
+    - scheme: slate
+      primary: deep orange
+      toggle:
+        icon: material/weather-sunny
+        name: Light mode
+  # logo: asserts/logo.png
+  # favicon: asserts/logo.png
+
+markdown_extensions:
+  - attr_list
+  - pymdownx.blocks.admonition
+  - pymdownx.details
+  - pymdownx.superfences
+
+# extra_css:
+#   - stylesheets/extra.css
+
+plugins:
+- mkdocstrings:
+    handlers:
+      python:
+        paths: [pylastfm]
