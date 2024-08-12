@@ -1,6 +1,16 @@
 from typing import Literal
 
 T_Period = Literal['overall', '7day', '1month', '3month', '6month', '12month']
+"""
+The period used in user methods
+
+- 'overall': Represents the overall period.
+- '7day': Represents the past 7 days.
+- '1month': Represents the past 1 month.
+- '3month': Represents the past 3 months.
+- '6month': Represents the past 6 months.
+- '12month': Represents the past 12 months.
+"""
 
 T_ISO3166CountryNames = Literal[
     'Afghanistan',
@@ -252,6 +262,9 @@ T_ISO3166CountryNames = Literal[
     'Zambia',
     'Zimbabwe',
 ]
+"""
+The ISO 31566 country name, used in methods to fetch data from countries.
+"""
 
 
 T_ISO639Alpha2Code = Literal[
@@ -460,3 +473,6 @@ T_ISO639Alpha2Code = Literal[
     'zh',
     'zu',
 ]
+"""
+The ISO 639 alpha-2 code of a language, used in some info methods.
+"""

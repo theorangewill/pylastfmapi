@@ -167,11 +167,19 @@ class RequestController:
             payload, parent_key, list_key, amount
         )
         response_list = []
-        for data in responses:
+        for index, data in enumerate(responses, start=1):
             _data = data.json()
-            response_list.extend(
-                _data.get('taggings', _data)[parent_key][list_key]
-            )
+            if amount and index == len(responses):
+                left_data = amount % LIMIT_SEARCH
+                response_list.extend(
+                    _data.get('taggings', _data)[parent_key][list_key][
+                        :left_data
+                    ]
+                )
+            else:
+                response_list.extend(
+                    _data.get('taggings', _data)[parent_key][list_key]
+                )
         return response_list
 
     #########################################################################
@@ -187,14 +195,14 @@ class RequestController:
         Args:
             payload (dict): The query parameters for the search request.
             parent_key (str): The parent key in the JSON response
-            containing the search results.
+                containing the search results.
             list_key (str): The key within the parent key's value
-            that contains the list of items.
+                that contains the list of items.
             amount (int): The total number of items to request.
 
         Returns:
             list[T_Response]: A list of HTTP response objects,
-            each representing a page of search results.
+                each representing a page of search results.
         """
         responses = []
         page = 1
@@ -258,13 +266,12 @@ class RequestController:
         )
         response_list = []
         for index, data in enumerate(responses, start=1):
+            _data = data.json()
             if amount and index == len(responses):
                 left_data = amount % LIMIT_SEARCH
                 response_list.extend(
-                    data.json()['results'][parent_key][list_key][:left_data]
+                    _data['results'][parent_key][list_key][:left_data]
                 )
             else:
-                response_list.extend(
-                    data.json()['results'][parent_key][list_key]
-                )
+                response_list.extend(_data['results'][parent_key][list_key])
         return response_list

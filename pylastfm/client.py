@@ -188,7 +188,7 @@ class LastFM:  # noqa PLR0904
 
         Raises:
             LastFMException: If neither `artist` and `album` nor `mbid`
-            are provided.
+                are provided.
         """
         if not (artist and album) and not mbid:
             raise LastFMException(
@@ -232,11 +232,11 @@ class LastFM:  # noqa PLR0904
 
         Returns:
             list[dict]: A list of dictionaries containing the user's tags
-            for the album.
+                for the album.
 
         Raises:
             LastFMException: If neither `artist` and `album` nor `mbid`
-            are provided.
+                are provided.
         """
         if not (artist and album) and not mbid:
             raise LastFMException(
