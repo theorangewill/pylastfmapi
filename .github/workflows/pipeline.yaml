@@ -5,6 +5,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
     
+    env:
+      API_KEY: ${{ secrets.API_KEY }}
+      USER_AGENT: ${{ secrets.USER_AGENT }}
+
     steps:
       - name: Copy repo files
         uses: actions/checkout@v3
