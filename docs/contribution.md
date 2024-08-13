@@ -5,14 +5,14 @@ If you want to contribute to the project, you will need to understand the projec
 ## Project structure
 
 
-```mermaid
-flowchart
-	. --> docs
-	. --> pylastfm
-	. --> tests
-    . --> mkdocs.yml
-    . --> pyproject.toml
-    . --> README.md
+```
+.
+├── docs/
+├── pylastfm/
+├── tests/
+├── pyproject.toml
+├── mkdocs.yml
+└── README.md
 ```
 
 The project has three directories: `docs`, `pylastfm`, and `tests`.
@@ -20,16 +20,16 @@ It also has the `pyproject.toml` defining the whole project environment, `mkdocs
 
 ### pylastfm
 
-```mermaid
-flowchart
-	. --> pylastfm
-    pylastfm --> client.py
-    pylastfm --> constants.py
-    pylastfm --> exceptions.py
-    pylastfm --> requests.py
-    pylastfm --> settings.py
-    pylastfm --> typehints.py
-    pylastfm --> utils.py
+```
+.
+└── pylastfm/
+    ├── client.py
+    ├── constants.py
+    ├── exceptions.py
+    ├── request.py
+    ├── settings.py
+    ├── typehints.py
+    └── utils.py
 ```
 
 The `pylastfm` directory has all the source code of the package.
@@ -45,46 +45,63 @@ The `pylastfm` directory has all the source code of the package.
 
 ### tests
 
-```mermaid
+```
 flowchart
-	. --> tests
-    tests --> conftest.py
-    tests --> integration
-    integration --> test_integration_client.py
-    tests --> unit
-    unit --> test_request.py
-    unit --> test_utils.py
-    unit --> client
-    client --> ...
+.
+└── tests/
+    ├── conftest.py
+    ├── integration/
+    │   └── client/
+    │       └── test_integration_client.py
+    └── unit/
+        ├── client/
+        │   ├── test_client_album_methods.py
+        │   ├── test_client_artist_methods.py
+        │   ├── test_client_chart_methods.py
+        │   ├── test_client_country_methods.py
+        │   ├── test_client_tag_methods.py
+        │   ├── test_client_track_methods.py
+        │   └── test_client_user_methods.py
+        ├── test_request.py
+        └── test_utils.py
 ```
 
 The `test` directory has all the tests of the package.
 
 - **`conftest.py`**: fixture for the tests
 - **`integration/test_integration_client.py`**: integration tests for the package
+- **`unit/client/...`**: unit tests for [`client.py`](api/client.md) separated in multiple scripts depending on the scope of the method (album, artist, chart, country, tag, track, and user)
 - **`unit/test_request.py`**: unit tests for [`requests.py`](api/requests.md)
 - **`unit/test_utils.py`**: unit tests for [`utils.py`](api/utils.md)
-- **`unit/client/...`**: unit tests for [`client.py`](api/client.md) separated in multiple scripts depending on the scope of the method (album, artist, chart, country, tag, track, and user)
 
 
 ### docs
 
-```mermaid
-flowchart
-	. --> docs
-    docs --> api
-    api --> ...
-    docs --> contribution.md
-    docs --> index.md
-    docs --> methods.md
+```
+.
+└── docs/
+    ├── api/
+    │   ├── client.md
+    │   ├── constants.md
+    │   ├── exceptions.md
+    │   ├── requests.md
+    │   ├── settings.md
+    │   ├── typehints.md
+    │   └── utils.md
+    ├── assets/
+    │   └── logo.png
+    ├── contribution.md
+    ├── index.md
+    └── methods.md
 ```
 
 The `docs` directory has all the documentation of the package.
 
+- **`api/`**: all the pages with the tech doc for each one of the scripts in package (client, constants, exceptions...)
+- **`assets/`**: the logo file
+- **`contribution.md`**: guidelines to contributing
 - **`index.md`**: main page
 - **`methods.md`**: all methods implemented
-- **`contribution.md`**: guidelines to contributing
-- **`api/`**: all the pages with the tech doc for each one of the scripts in package (client, constants, exceptions...)
 
 ***
 

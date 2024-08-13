@@ -23,11 +23,7 @@ markdown_extensions:
   - attr_list
   - pymdownx.blocks.admonition
   - pymdownx.details
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.superfences
 
 # extra_css:
 #   - 'stylesheets/extras.css'
