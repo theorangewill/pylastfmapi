@@ -1,9 +1,22 @@
 [tool.poetry]
 name = "pylastfm"
 version = "0.1.0"
-description = ""
+description = "An API library to interact with the LastFM API written in Python"
 authors = ["William Felipe <theorangewill@gmail.com>"]
 readme = "README.md"
+license = "MIT"
+packages = [{include = 'pylastfm'}]
+classifiers = [
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: MIT License',
+    'Programming Language :: Python :: 3.12',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Topic :: Utilities'
+]
+
+[tool.poetry.urls]
+'Docmentation' = 'https://pylastfm.readthedocs.io/en/latest/'
+'Repository' = 'https://github.com/theorangewill/pylastfm'
 
 [tool.poetry.dependencies]
 python = "^3.12"

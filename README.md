@@ -1,8 +1,12 @@
 # pylastfm 
 
+![CI](https://github.com/theorangewill/pylastfm/actions/workflows/pipeline.yaml/badge.svg)
+[![Documentation Status](https://readthedocs.org/projects/pylastfm/badge/?version=latest)](https://pylastfm.readthedocs.io/en/latest/?badge=latest)
+
 This package provides an interface to interact with the LastFM API.
 It includes methods to retrieve various types of data from albums, artists, tracks, tags, users, LastFM charts, and user charts. 
-The package supports pagination for large datasets and provides flexibility in querying data with optional filters, following the parameters provided by the API.
+
+Read the docs [here](https://pylastfm.readthedocs.io/en/latest/).
 
 ## Installation
 
