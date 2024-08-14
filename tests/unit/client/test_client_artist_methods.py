@@ -1,7 +1,7 @@
 import pytest
 
-from pylastfm.client import LastFM
-from pylastfm.constants import (
+from pylastfmapi.client import LastFM
+from pylastfmapi.constants import (
     ARTIST_GETCORRECTION,
     ARTIST_GETINFO,
     ARTIST_GETSIMILAR,
@@ -11,7 +11,7 @@ from pylastfm.constants import (
     ARTIST_GETTOPTRACKS,
     ARTIST_SEARCH,
 )
-from pylastfm.exceptions import LastFMException
+from pylastfmapi.exceptions import LastFMException
 
 #########################################################################
 # GET ARTIST INFO
@@ -37,7 +37,7 @@ def test_get_artist_info(setup_request_mock):
 
 
 def test_get_artist_info_without_artist_and_mbid(mocker):
-    mocker.patch('pylastfm.client.RequestController')
+    mocker.patch('pylastfmapi.client.RequestController')
     client = LastFM('user_agent_test', 'api_key_test')
     ##
     with pytest.raises(
@@ -116,7 +116,7 @@ def test_get_artist_tags(setup_request_mock):
 
 def test_get_artist_tags_without_artist_and_mbid(mocker):
     user = 'usertest'
-    mocker.patch('pylastfm.client.RequestController')
+    mocker.patch('pylastfmapi.client.RequestController')
     client = LastFM('user_agent_test', 'api_key_test')
     ##
     with pytest.raises(
@@ -207,7 +207,7 @@ def test_get_artist_top_tags(setup_request_mock):
 
 
 def test_get_artist_top_tags_without_artist_and_mbid(mocker):
-    mocker.patch('pylastfm.client.RequestController')
+    mocker.patch('pylastfmapi.client.RequestController')
     client = LastFM('user_agent_test', 'api_key_test')
     ##
     with pytest.raises(
@@ -280,7 +280,7 @@ def test_get_artist_top_albums(setup_paginated_mock):
 
 
 def test_get_artist_top_albums_without_artist_and_mbid(mocker):
-    mocker.patch('pylastfm.client.RequestController')
+    mocker.patch('pylastfmapi.client.RequestController')
     client = LastFM('user_agent_test', 'api_key_test')
     ##
     with pytest.raises(
@@ -365,7 +365,7 @@ def test_get_artist_top_tracks(setup_paginated_mock):
 
 
 def test_get_artist_top_tracks_without_artist_and_mbid(mocker):
-    mocker.patch('pylastfm.client.RequestController')
+    mocker.patch('pylastfmapi.client.RequestController')
     client = LastFM('user_agent_test', 'api_key_test')
     ##
     with pytest.raises(
@@ -446,7 +446,7 @@ def test_get_artist_similar(setup_request_mock):
 
 
 def test_get_artist_similar_without_artist_and_mbid(mocker):
-    mocker.patch('pylastfm.client.RequestController')
+    mocker.patch('pylastfmapi.client.RequestController')
     client = LastFM('user_agent_test', 'api_key_test')
     ##
     with pytest.raises(
@@ -504,7 +504,7 @@ def test_search_artist(mocker):
     return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
 
     MockRequestController = mocker.patch(
-        'pylastfm.client.RequestController', autospec=True
+        'pylastfmapi.client.RequestController', autospec=True
     )
     mock_request_controller = MockRequestController.return_value
     mock_request_controller.get_search_data.return_value = return_value

@@ -2,8 +2,8 @@ from datetime import datetime
 
 import pytest
 
-from pylastfm.client import LastFM
-from pylastfm.constants import (
+from pylastfmapi.client import LastFM
+from pylastfmapi.constants import (
     LIBRARY_GETARTISTS,
     MAX_WEEKLY_CHART,
     USER_GETFRIENDS,
@@ -19,7 +19,7 @@ from pylastfm.constants import (
     USER_GETWEEKLYARTISTCHART,
     USER_GETWEEKLYTRACKCHART,
 )
-from pylastfm.exceptions import LastFMException
+from pylastfmapi.exceptions import LastFMException
 
 # #########################################################################
 # # GET USER FRIENDS
@@ -580,7 +580,7 @@ def test_get_user_weekly_album_chart_with_parameters(
         }
     }
     mocker.patch(
-        'pylastfm.utils.get_timestamp',
+        'pylastfmapi.utils.get_timestamp',
         return_value=[
             int(datetime.strptime(date_from, '%Y-%m-%d').timestamp()),
             int(datetime.strptime(date_to, '%Y-%m-%d').timestamp()),
@@ -606,7 +606,7 @@ def test_get_user_weekly_album_chart_with_parameters(
 def test_get_user_weekly_album_chart_with_amount_higher_than_maximum(mocker):
     user = 'username'
     amount = MAX_WEEKLY_CHART + 1
-    mocker.patch('pylastfm.client.RequestController')
+    mocker.patch('pylastfmapi.client.RequestController')
     client = LastFM('user_agent_test', 'api_key_test')
     ##
     with pytest.raises(
@@ -656,7 +656,7 @@ def test_get_user_weekly_artist_chart_with_parameters(
         }
     }
     mocker.patch(
-        'pylastfm.utils.get_timestamp',
+        'pylastfmapi.utils.get_timestamp',
         return_value=[
             int(datetime.strptime(date_from, '%Y-%m-%d').timestamp()),
             int(datetime.strptime(date_to, '%Y-%m-%d').timestamp()),
@@ -682,7 +682,7 @@ def test_get_user_weekly_artist_chart_with_parameters(
 def test_get_user_weekly_artist_chart_with_amount_higher_than_maximum(mocker):
     user = 'username'
     amount = MAX_WEEKLY_CHART + 1
-    mocker.patch('pylastfm.client.RequestController')
+    mocker.patch('pylastfmapi.client.RequestController')
     client = LastFM('user_agent_test', 'api_key_test')
     ##
     with pytest.raises(
@@ -732,7 +732,7 @@ def test_get_user_weekly_track_chart_with_parameters(
         }
     }
     mocker.patch(
-        'pylastfm.utils.get_timestamp',
+        'pylastfmapi.utils.get_timestamp',
         return_value=[
             int(datetime.strptime(date_from, '%Y-%m-%d').timestamp()),
             int(datetime.strptime(date_to, '%Y-%m-%d').timestamp()),
@@ -758,7 +758,7 @@ def test_get_user_weekly_track_chart_with_parameters(
 def test_get_user_weekly_track_chart_with_amount_higher_than_maximum(mocker):
     user = 'username'
     amount = MAX_WEEKLY_CHART + 1
-    mocker.patch('pylastfm.client.RequestController')
+    mocker.patch('pylastfmapi.client.RequestController')
     client = LastFM('user_agent_test', 'api_key_test')
     ##
     with pytest.raises(
@@ -805,7 +805,7 @@ def test_get_user_recent_tracks_with_parameters(mocker, setup_paginated_mock):
     return_value = [{'name': 'Track Name'}, {'name': 'Track Name'}]
 
     mocker.patch(
-        'pylastfm.utils.get_timestamp',
+        'pylastfmapi.utils.get_timestamp',
         return_value=[
             int(datetime.strptime(date_from, '%Y-%m-%d').timestamp()),
             int(datetime.strptime(date_to, '%Y-%m-%d').timestamp()),

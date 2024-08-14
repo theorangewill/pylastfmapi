@@ -1,4 +1,4 @@
-from pylastfm.constants import (
+from pylastfmapi.constants import (
     GEO_GETOPTRACKS,
     GEO_GETTOPARTISTS,
 )

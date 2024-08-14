@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "pylastfm"
+name = "pylastfmapi"
 version = "0.1.0"
 description = "An API library to interact with the LastFM API written in Python"
 authors = ["William Felipe <theorangewill@gmail.com>"]
 readme = "README.md"
 license = "MIT"
-packages = [{include = 'pylastfm'}]
+packages = [{include = 'pylastfmapi'}]
 classifiers = [
     'Intended Audience :: Developers',
     'License :: OSI Approved :: MIT License',
@@ -15,8 +15,8 @@ classifiers = [
 ]
 
 [tool.poetry.urls]
-'Docmentation' = 'https://pylastfm.readthedocs.io/en/latest/'
-'Repository' = 'https://github.com/theorangewill/pylastfm'
+'Docmentation' = 'https://pylastfmapi.readthedocs.io/en/latest/'
+'Repository' = 'https://github.com/theorangewill/pylastfmapi'
 
 [tool.poetry.dependencies]
 python = "^3.12"
@@ -71,7 +71,7 @@ format = 'black . && ruff check . --fix && ruff format .'
 mypy = 'mypy .'
 
 pre_test = 'task lint'
-test = 'pytest -s -x --cov=pylastfm -vv'
+test = 'pytest -s -x --cov=pylastfmapi -vv'
 post_test = 'coverage html'
 
 docs = 'mkdocs serve'

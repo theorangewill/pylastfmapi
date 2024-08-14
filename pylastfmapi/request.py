@@ -6,8 +6,8 @@ from typing import Annotated
 import requests
 import requests_cache
 
-from pylastfm.constants import LIMIT, LIMIT_SEARCH, URL
-from pylastfm.exceptions import RequestErrorException
+from pylastfmapi.constants import LIMIT, LIMIT_SEARCH, URL
+from pylastfmapi.exceptions import RequestErrorException
 
 # T_Response is a type alias representing the possible response types
 # returned by requests made through the `RequestController`.

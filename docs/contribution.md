@@ -8,21 +8,21 @@ If you want to contribute to the project, you will need to understand the projec
 ```
 .
 ├── docs/
-├── pylastfm/
+├── pylastfmapi/
 ├── tests/
 ├── pyproject.toml
 ├── mkdocs.yml
 └── README.md
 ```
 
-The project has three directories: `docs`, `pylastfm`, and `tests`.
+The project has three directories: `docs`, `pylastfmapi`, and `tests`.
 It also has the `pyproject.toml` defining the whole project environment, `mkdocs.yml` with documentation settings, and the `README.md`.
 
-### pylastfm
+### pylastfmapi
 
 ```
 .
-└── pylastfm/
+└── pylastfmapi/
     ├── client.py
     ├── constants.py
     ├── exceptions.py
@@ -32,7 +32,7 @@ It also has the `pyproject.toml` defining the whole project environment, `mkdocs
     └── utils.py
 ```
 
-The `pylastfm` directory has all the source code of the package.
+The `pylastfmapi` directory has all the source code of the package.
 
 - **[`client.py`](api/client.md)**: the LastFM API class with all methods implemented.
 - **[`constants.py`](api/constants.md)**: all constants used in the project to interact with the LastFM API, like backend methods names, and pre-defined values for some operations.
@@ -115,7 +115,7 @@ All the requirements are explicitly described in `pyproject.toml` file, with the
 Following the steps you will be able to build the environment with Poetry:
 
 ```bash
-git clone https://github.com/theorangewill/pylastfm.git
+git clone https://github.com/theorangewill/pylastfmapi.git
 poetry install
 poetry shell
 ```

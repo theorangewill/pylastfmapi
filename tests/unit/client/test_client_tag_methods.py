@@ -1,4 +1,4 @@
-from pylastfm.constants import (
+from pylastfmapi.constants import (
     TAG_GETINFO,
     TAG_GETSIMILAR,
     TAG_GETTOPALBUMS,

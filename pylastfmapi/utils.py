@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pylastfm.exceptions import LastFMException
+from pylastfmapi.exceptions import LastFMException
 
 
 def get_timestamp(

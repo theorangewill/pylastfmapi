@@ -1,4 +1,4 @@
-# ![](assets/logo.png){ width="50" } pylastfm 
+# ![](assets/logo.png){ width="50" } pylastfmapi 
 
 This package provides an interface to interact with the LastFM API.
 It includes methods to retrieve various types of data from albums, artists, tracks, tags, users, LastFM charts, and user charts. 
@@ -9,7 +9,7 @@ The package supports pagination for large datasets and provides flexibility in q
 To install the package, use the following command:
 
 ```{.sh}
-pip install pylastfm
+pip install pylastfmapi
 ```
 ## Basic usage
 
@@ -18,10 +18,10 @@ First of all, you need to get an API key from LastFM official website. For this,
 
 ### Go to Python script
 
-To interact with the LastFM API you can simply import `pylastfm` and create a LastFM client object with your username as `USER_AGENT` and the API key from the previous step as `API_KEY`:
+To interact with the LastFM API you can simply import `pylastfmapi` and create a LastFM client object with your username as `USER_AGENT` and the API key from the previous step as `API_KEY`:
 
 ```{.py3}
-from pylastfm.client import LastFM
+from pylastfmapi.client import LastFM
 
 # Your LastFM API credentials
 USER_AGENT = 'user-agent'

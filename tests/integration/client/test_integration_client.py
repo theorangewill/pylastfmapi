@@ -1,7 +1,7 @@
 import pytest
 
-from pylastfm.client import LastFM
-from pylastfm.settings import Settings
+from pylastfmapi.client import LastFM
+from pylastfmapi.settings import Settings
 
 
 @pytest.fixture

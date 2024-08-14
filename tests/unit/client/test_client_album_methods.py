@@ -1,13 +1,13 @@
 import pytest
 
-from pylastfm.client import LastFM
-from pylastfm.constants import (
+from pylastfmapi.client import LastFM
+from pylastfmapi.constants import (
     ALBUM_GETINFO,
     ALBUM_GETTAGS,
     ALBUM_GETTOPTAGS,
     ALBUM_SEARCH,
 )
-from pylastfm.exceptions import LastFMException
+from pylastfmapi.exceptions import LastFMException
 
 #########################################################################
 # GET ALBUM INFO
@@ -43,7 +43,7 @@ def test_get_album_info(setup_request_mock):
     ],
 )
 def test_get_album_info_missing_parameters(mocker, artist, album, mbid):
-    mocker.patch('pylastfm.client.RequestController')
+    mocker.patch('pylastfmapi.client.RequestController')
     client = LastFM('user_agent_test', 'api_key_test')
     ##
     with pytest.raises(
@@ -137,7 +137,7 @@ def test_get_album_tags(setup_request_mock):
 )
 def test_get_album_tags_missing_parameters(mocker, artist, album, mbid):
     user = 'usertest'
-    mocker.patch('pylastfm.client.RequestController')
+    mocker.patch('pylastfmapi.client.RequestController')
     client = LastFM('user_agent_test', 'api_key_test')
     ##
     with pytest.raises(
@@ -247,7 +247,7 @@ def test_get_album_top_tags(setup_request_mock):
     ],
 )
 def test_get_album_top_tags_missing_parameters(mocker, artist, album, mbid):
-    mocker.patch('pylastfm.client.RequestController')
+    mocker.patch('pylastfmapi.client.RequestController')
     client = LastFM('user_agent_test', 'api_key_test')
     ##
     with pytest.raises(

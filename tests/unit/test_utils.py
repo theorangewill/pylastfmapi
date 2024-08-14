@@ -2,8 +2,8 @@ from datetime import datetime
 
 import pytest
 
-from pylastfm.exceptions import LastFMException
-from pylastfm.utils import get_timestamp
+from pylastfmapi.exceptions import LastFMException
+from pylastfmapi.utils import get_timestamp
 
 #########################################################################
 # get_timestamp

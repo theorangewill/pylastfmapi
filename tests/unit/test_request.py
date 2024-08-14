@@ -3,9 +3,9 @@ from unittest.mock import call
 
 import pytest
 
-from pylastfm.constants import LIMIT, LIMIT_SEARCH
-from pylastfm.exceptions import RequestErrorException
-from pylastfm.request import RequestController
+from pylastfmapi.constants import LIMIT, LIMIT_SEARCH
+from pylastfmapi.exceptions import RequestErrorException
+from pylastfmapi.request import RequestController
 
 ##############################################################################
 # Test request
@@ -27,7 +27,7 @@ def test_request_spy(mocker, mock_request_get):
     url_test = 'url-test.com'
     user_agent_test = 'user_agent_test'
     api_key_test = 'api_key_test'
-    mocker.patch('pylastfm.request.URL', url_test)
+    mocker.patch('pylastfmapi.request.URL', url_test)
     mocker.patch('requests_cache.install_cache', autospec=True)
     ###
     controller = RequestController(user_agent_test, api_key_test)
@@ -56,7 +56,7 @@ def test_request_spy_overide_api_key(mocker, mock_request_get):
     url_test = 'url-test.com'
     user_agent_test = 'user_agent_test'
     api_key_test = 'api_key_test'
-    mocker.patch('pylastfm.request.URL', url_test)
+    mocker.patch('pylastfmapi.request.URL', url_test)
     mocker.patch('requests_cache.install_cache', autospec=True)
     ###
     controller = RequestController(user_agent_test, api_key_test)
@@ -84,7 +84,7 @@ def test_request_with_status_error(mocker):
     url_test = 'url-test.com'
     user_agent_test = 'user_agent_test'
     api_key_test = 'api_key_test'
-    mocker.patch('pylastfm.request.URL', url_test)
+    mocker.patch('pylastfmapi.request.URL', url_test)
     mocker.patch('requests_cache.install_cache', autospec=True)
 
     mock_request_get = mocker.patch('requests.get', autospec=True)
@@ -106,7 +106,7 @@ def test_request_with_error_message(mocker):
     url_test = 'url-test.com'
     user_agent_test = 'user_agent_test'
     api_key_test = 'api_key_test'
-    mocker.patch('pylastfm.request.URL', url_test)
+    mocker.patch('pylastfmapi.request.URL', url_test)
     mocker.patch('requests_cache.install_cache', autospec=True)
 
     mock_request_get = mocker.patch('requests.get', autospec=True)
@@ -800,7 +800,7 @@ def test_get_search_data(mocker):
 
 
 def test_get_search_data_amount_not_divisible_by_limit(mocker):
-    mocker.patch('pylastfm.request.LIMIT_SEARCH', 2)
+    mocker.patch('pylastfmapi.request.LIMIT_SEARCH', 2)
     user_agent_test = 'user_agent_test'
     api_key_test = 'api_key_test'
 

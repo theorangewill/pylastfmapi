@@ -1,4 +1,4 @@
-from pylastfm.constants import (
+from pylastfmapi.constants import (
     CHART_GETTOPARTISTS,
     CHART_GETTOPTAGS,
     CHART_GETTOPTRACKS,

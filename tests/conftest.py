@@ -1,13 +1,13 @@
 import pytest
 
-from pylastfm.client import LastFM
+from pylastfmapi.client import LastFM
 
 
 @pytest.fixture
 def setup_request_mock(mocker):
     def _setup_request_mock(return_value):
         MockRequestController = mocker.patch(
-            'pylastfm.client.RequestController', autospec=True
+            'pylastfmapi.client.RequestController', autospec=True
         )
         mock_request_controller = MockRequestController.return_value
         mock_response = mocker.Mock().return_value
@@ -24,7 +24,7 @@ def setup_request_mock(mocker):
 def setup_paginated_mock(mocker):
     def _setup_paginated_mock(return_value):
         MockRequestController = mocker.patch(
-            'pylastfm.client.RequestController', autospec=True
+            'pylastfmapi.client.RequestController', autospec=True
         )
         mock_request_controller = MockRequestController.return_value
         mock_request_controller.get_paginated_data.return_value = return_value
@@ -38,7 +38,7 @@ def setup_paginated_mock(mocker):
 def setup_search_mock(mocker):
     def _setup_search_mock(return_value):
         MockRequestController = mocker.patch(
-            'pylastfm.client.RequestController', autospec=True
+            'pylastfmapi.client.RequestController', autospec=True
         )
         mock_request_controller = MockRequestController.return_value
         mock_request_controller.get_search_data.return_value = return_value

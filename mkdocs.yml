@@ -1,6 +1,6 @@
-site_name: pylastfm
-repo_url: https://github.com/theorangewill/pylastfm
-repo_name: theorangewill/pylastfm
+site_name: pylastfmapi
+repo_url: https://github.com/theorangewill/pylastfmapi
+repo_name: theorangewill/pylastfmapi
 edit_uri: tree/main/docs
 
 theme:
@@ -32,4 +32,4 @@ plugins:
 - mkdocstrings:
     handlers:
       python:
-        paths: [pylastfm]
+        paths: [pylastfmapi]

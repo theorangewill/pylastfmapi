@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pylastfm.constants import (
+from pylastfmapi.constants import (
     ALBUM_GETINFO,
     ALBUM_GETTAGS,
     ALBUM_GETTOPTAGS,
@@ -44,14 +44,14 @@ from pylastfm.constants import (
     USER_GETWEEKLYARTISTCHART,
     USER_GETWEEKLYTRACKCHART,
 )
-from pylastfm.exceptions import LastFMException
-from pylastfm.request import RequestController
-from pylastfm.typehints import (
+from pylastfmapi.exceptions import LastFMException
+from pylastfmapi.request import RequestController
+from pylastfmapi.typehints import (
     T_ISO639Alpha2Code,
     T_ISO3166CountryNames,
     T_Period,
 )
-from pylastfm.utils import get_timestamp
+from pylastfmapi.utils import get_timestamp
 
 
 class LastFM:  # noqa PLR0904
